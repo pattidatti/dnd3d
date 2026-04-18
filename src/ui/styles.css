@@ -1,0 +1,301 @@
+.toolbar {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(20, 22, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  user-select: none;
+}
+
+.toolbar-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  transition: background 0.1s, border-color 0.1s;
+  color: #ccc;
+}
+
+.toolbar-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.toolbar-btn.active {
+  border-color: #aa3bff;
+  background: rgba(170, 59, 255, 0.15);
+  color: #fff;
+}
+
+.toolbar-btn canvas {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.toolbar-btn .label {
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.2px;
+}
+
+.toolbar-btn .hotkey {
+  position: absolute;
+  font-size: 9px;
+  color: #888;
+  margin-top: -44px;
+  margin-left: 36px;
+}
+
+.tool-mode {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(20, 22, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  user-select: none;
+}
+
+.tool-mode-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid transparent;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 20px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.tool-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tool-mode-btn.active {
+  border-color: #aa3bff;
+  background: rgba(170, 59, 255, 0.18);
+  color: #fff;
+}
+
+.identity-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 6, 10, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.identity-modal {
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background: #191b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  color: #e4e6ef;
+  font-family: system-ui, sans-serif;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.identity-modal h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.identity-modal .hint {
+  margin: 0 0 16px;
+  font-size: 12px;
+  color: #8b91a6;
+}
+
+.identity-modal .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #b3b8cc;
+}
+
+.identity-modal .field.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #e4e6ef;
+}
+
+.identity-modal input[type='text'] {
+  background: #0e1016;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.identity-modal input[type='text']:focus {
+  border-color: #aa3bff;
+}
+
+.identity-modal .swatches {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+.identity-modal .swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.identity-modal .swatch.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #aa3bff;
+}
+
+.identity-modal .error {
+  min-height: 16px;
+  font-size: 12px;
+  color: #ff7575;
+  margin-bottom: 8px;
+}
+
+.identity-modal .actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.identity-modal button.primary {
+  background: #aa3bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.identity-modal button.primary:hover {
+  background: #b950ff;
+}
+
+.identity-badge {
+  position: fixed;
+  top: 16px;
+  right: 250px;
+  padding: 6px 12px;
+  background: rgba(20, 22, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #ddd;
+  font: 12px system-ui, sans-serif;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.identity-badge .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.identity-badge .dm-tag {
+  background: #aa3bff;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.identity-badge button {
+  background: transparent;
+  border: none;
+  color: #8b91a6;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.identity-badge button:hover {
+  color: #fff;
+}
+
+.view-toggle {
+  position: fixed;
+  top: 16px;
+  right: 460px;
+  padding: 6px 12px;
+  background: rgba(20, 22, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #ddd;
+  font: 12px system-ui, sans-serif;
+  cursor: pointer;
+  z-index: 10;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.view-toggle:hover {
+  background: rgba(40, 42, 52, 0.95);
+}
+
+.view-toggle.player-mode {
+  border-color: #ffaa3b;
+  color: #ffd28a;
+}
+
+#minimap {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 220px;
+  height: 220px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: #0a0c10;
+  cursor: crosshair;
+  z-index: 10;
+}

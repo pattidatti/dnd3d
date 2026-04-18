@@ -72,10 +72,16 @@ export class CharacterAvatar {
     }
 
     this.label = new CharacterLabel(appearance.name);
-    this.label.sprite.position.set(0, LEG_H + TORSO_H + HEAD_H + 0.6, 0);
     this.root.add(this.label.sprite);
 
     this.applyAppearance(appearance);
+
+    // Avatar fremstår som en liten spillbrikke — blokker virker større.
+    // Fysikk-AABB (CHAR_HEIGHT 5.9) er uendret; bare det visuelle skaleres.
+    const VISUAL_SCALE = 0.5;
+    this.root.scale.setScalar(VISUAL_SCALE);
+    this.label.sprite.position.set(0, (LEG_H + TORSO_H + HEAD_H + 1.0) / VISUAL_SCALE, 0);
+    this.label.sprite.scale.set(3.2 / VISUAL_SCALE, 0.8 / VISUAL_SCALE, 1);
   }
 
   /** Plasser avataren ved fot-sentrum (base-Y = toppen av voxelen under). */

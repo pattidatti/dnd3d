@@ -39,11 +39,19 @@ Materialer caches per type i `getMaterial()`. Hvis du trenger teksturer senere m
 
 `VoxelRenderer` maintains one `THREE.InstancedMesh` per `BlockType` with capacity 250 000 each. It tracks a `keyToIndex` map + free-list for slot reuse and exposes `decodeHit(mesh, instanceId)` for raycasters.
 
-**Per-instance ambient occlusion**: `instanceColor` brukes til å mørkne blokker basert på antall av 6 kardinale naboer — `brightness = 1 - buried * 0.07`. `refreshAO` kalles på blokken selv ved add og på 6 naboer ved add/remove. Dette er grunnen til at materialet må ha `vertexColors: true`.
+**Per-instance ambient occlusion**: `instanceColor` brukes til å mørkne blokker basert på naboer. Kardinale naboer (6) veier 0.07 hver, kant-naboer (12 diagonal-på-akse) veier 0.025 hver — `brightness = clamp(1 - cardinal*0.07 - edge*0.025, 0.55, 1.0)`. `refreshAO` kalles på blokken selv ved add og på 18 naboer (`ALL_INFLUENCE_OFFSETS`) ved add/remove.
 
-### Belysning og atmosfære
+### Belysning, atmosfære og post-processing
 
-`SkyEnvironment` eier atmosfæren: three.js `Sky` shader, `DirectionalLight` (sol med shadowmap 2048²), `HemisphereLight`, pluss scene-bakgrunn + `THREE.Fog` for dybde. Skygger er på (`renderer.shadowMap.enabled = true`, PCFSoft).
+`SkyEnvironment` eier atmosfæren: three.js `Sky` shader, `DirectionalLight` (sol, shadowmap-størrelse styrt av `GraphicsQuality`), `HemisphereLight`, scene-bakgrunn + `THREE.Fog`. Skygger er på (PCFSoft). Sol-vinkel og lys-/fog-farger er ikke statiske lenger — `setMood('day' | 'dawn' | 'dusk' | 'night')` interpolerer alle parametre over 600ms (kalt fra `App.applyMood`). `tick()` driver overgangen og debouncer PMREM-rebuild i rAF.
+
+`PostProcessing` (`src/render/PostProcessing.ts`) er den nye render-rotløkken — `App.tick` kaller `post.render(dt)` istedenfor `renderer.render(...)`. Pipeline (i rekkefølge): `RenderPass → SSAOPass → UnrealBloomPass → ShaderPass(grade+vignette) → OutputPass → SMAAPass`. Tone mapping skjer i `OutputPass` (renderer-tonemap brukes ikke direkte når composer er aktiv, men `renderer.toneMapping` leses av OutputPass — la den stå). Mood-bytte tinter bloom/grade/vignette via `post.setMood`.
+
+`GraphicsQuality` (low/medium/high) styrer SSAO på/av + half-res, SMAA, partikkel-antall og shadowmap-størrelse. Persisteres i localStorage. Bytte trigger `post.setQuality` (rebuilder passes), `sky.applyShadowMapSize`, og `atmosphere.setCapacity`.
+
+`Atmosphere` (`src/render/Atmosphere.ts`) er en lett `Points`-mesh med dust-partikler som driver i custom vertex-shader, fader på avstand, og følger kameraet i XZ. Antall + farge skaleres med mood og quality.
+
+Water-blokken bruker `MeshStandardMaterial.onBeforeCompile` til å injisere vertex-bølger (tre summerte sinus på world-XZ) og lett fresnel-glød i `<opaque_fragment>`. Tids-uniformen er global og oppdateres via `tickWater(elapsedTime)` i `App.tick`.
 
 **Det finnes ingen TorchLightPool lenger** — spec nevner den, men Torch-blokktypen ble fjernet sammen med pool-klassen. Hvis dynamiske lys gjeninnføres, implementer en ny pool fremfor å legge ubegrenset antall `PointLight` i scenen.
 
@@ -93,7 +101,11 @@ Spec-et er ikke løpende oppdatert. Per i dag:
 - **TorchLightPool fjernet**.
 - **MapGenerator.fromImage fjernet** — `public/map.png` brukes ikke lenger ved oppstart.
 - **Fog of War er implementert** (Fase 3 mesteparten ferdig) som egen toolmode, ikke via `ModeToggle`-klassen spec-et beskriver.
-- **SkyEnvironment** (Sky shader, sol, skygger, scene-fog) er lagt til; spec-en nevner bare directional + ambient.
+- **SkyEnvironment** (Sky shader, sol, skygger, scene-fog) er lagt til; spec-en nevner bare directional + ambient. Har nå `setMood`-presets (dawn/day/dusk/night) med interpolerte overganger.
+- **Post-processing pipeline** (`src/render/PostProcessing.ts`) — SSAO + Bloom + color grade/vignette + SMAA via EffectComposer. App.tick rendrer via `post.render(dt)`, ikke `renderer.render(...)`.
+- **GraphicsQuality** + DM-only **MoodPanel** (`src/ui/MoodPanel.ts`) lar mester bytte stemning og kvalitet i runtime.
+- **Atmosphere** (`src/render/Atmosphere.ts`) tilfører subtile dust-partikler.
+- **Water** har animerte vertex-bølger via `onBeforeCompile`-injection i `BlockPalette.getMaterial`.
 - **Fase 4/5** (Firebase Auth, lobby, RTDB-sync) er fortsatt ikke påbegynt.
 
 Hvis du endrer noe av det ovenfor, oppdater både denne seksjonen og `mvp.md`.

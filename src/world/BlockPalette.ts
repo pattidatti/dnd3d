@@ -74,18 +74,18 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
 // Townscaper/Monument Valley-inspirert pastellpalett. Ingen teksturer —
 // materialene er flate farger med varierende roughness.
 export const BLOCK_COLORS: Record<BlockType, number> = {
-  [BlockType.Stone]: 0xcfc9bf,
-  [BlockType.Plaster]: 0xf1e6d0,
-  [BlockType.Brick]: 0xc47a6a,
-  [BlockType.Roof]: 0x9a4a3f,
-  [BlockType.Wood]: 0xd9b384,
-  [BlockType.Dirt]: 0x9c7b5b,
-  [BlockType.Grass]: 0x94c08a,
-  [BlockType.Leaf]: 0x7ca66a,
-  [BlockType.Trunk]: 0x7d5a3f,
-  [BlockType.Sand]: 0xe8d9a4,
-  [BlockType.Water]: 0x7ec1c4,
-  [BlockType.Slate]: 0x6b7079,
+  [BlockType.Stone]: 0xb0aba2,
+  [BlockType.Plaster]: 0xf5ede0,
+  [BlockType.Brick]: 0xd46040,
+  [BlockType.Roof]: 0x8a3028,
+  [BlockType.Wood]: 0xe0b560,
+  [BlockType.Dirt]: 0x8a6040,
+  [BlockType.Grass]: 0x5fb856,
+  [BlockType.Leaf]: 0x4a9e40,
+  [BlockType.Trunk]: 0x624530,
+  [BlockType.Sand]: 0xe8cf70,
+  [BlockType.Water]: 0x40b4c0,
+  [BlockType.Slate]: 0x4e5a6a,
 };
 
 interface MaterialSpec {
@@ -119,6 +119,14 @@ const SPECS: Record<BlockType, MaterialSpec> = {
 
 const materialCache = new Map<BlockType, THREE.MeshStandardMaterial>();
 
+// Felles tids-uniform for animert vann. Deles av alle Water-instanser så vi
+// kan oppdatere én verdi per frame fra App.tick.
+const waterTimeUniform = { value: 0 };
+
+export function tickWater(elapsedSeconds: number): void {
+  waterTimeUniform.value = elapsedSeconds;
+}
+
 export function getMaterial(type: BlockType): THREE.MeshStandardMaterial {
   let mat = materialCache.get(type);
   if (mat) return mat;
@@ -134,6 +142,74 @@ export function getMaterial(type: BlockType): THREE.MeshStandardMaterial {
     transparent: spec.transparent ?? false,
     opacity: spec.opacity ?? 1,
   });
+
+  if (type === BlockType.Water) {
+    applyWaterShader(mat);
+  }
+
   materialCache.set(type, mat);
   return mat;
+}
+
+// Injiserer vertex-bølger og lett fresnel-glød i Water-materialet. Bruker
+// onBeforeCompile slik at vi beholder hele PBR-pipelinen (tonemap, env, AO).
+function applyWaterShader(mat: THREE.MeshStandardMaterial): void {
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uTime = waterTimeUniform;
+
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        `
+        #include <common>
+        uniform float uTime;
+        varying float vWaveTop;
+        varying vec3 vWorldPosLocal;
+        `,
+      )
+      .replace(
+        '#include <begin_vertex>',
+        `
+        vec3 transformed = vec3( position );
+        // Sentrert i [-0.5, 0.5]^3 — top-flaten ligger på y = +0.5.
+        // Vi vil bare bevege topp-vertices så bunnen forblir flat mot
+        // underliggende blokker.
+        float topMask = step(0.4, position.y);
+        vWaveTop = topMask;
+
+        // Bruk verdens-XZ til bølgene (via instansens worldMatrix) slik at
+        // tilstøtende vannblokker danner sammenhengende bølger.
+        vec4 wp = instanceMatrix * vec4(position, 1.0);
+        wp = modelMatrix * wp;
+        vWorldPosLocal = wp.xyz;
+        float t = uTime;
+        float w1 = sin(wp.x * 0.55 + t * 1.4) * 0.06;
+        float w2 = sin(wp.z * 0.42 - t * 1.1) * 0.05;
+        float w3 = sin((wp.x + wp.z) * 0.3 + t * 0.7) * 0.04;
+        transformed.y += (w1 + w2 + w3) * topMask;
+        `,
+      );
+
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `
+        #include <common>
+        varying float vWaveTop;
+        varying vec3 vWorldPosLocal;
+        `,
+      )
+      .replace(
+        '#include <opaque_fragment>',
+        `
+        // Lett fresnel-glød — øker reflektivitet på flate vinkler.
+        vec3 viewDir = normalize(cameraPosition - vWorldPosLocal);
+        float fres = pow(1.0 - max(dot(normalize(vNormal), viewDir), 0.0), 3.0);
+        outgoingLight += vec3(0.18, 0.32, 0.4) * fres * vWaveTop * 0.5;
+        #include <opaque_fragment>
+        `,
+      );
+  };
+  // Tving recompile dersom materialet allerede er brukt.
+  mat.needsUpdate = true;
 }

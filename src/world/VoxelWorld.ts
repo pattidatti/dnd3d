@@ -21,11 +21,13 @@ export interface BlockEvent {
 
 type AddListener = (e: BlockEvent) => void;
 type RemoveListener = (e: BlockEvent) => void;
+type ClearListener = () => void;
 
 export class VoxelWorld {
   private readonly blocks = new Map<PosKey, BlockType>();
   private readonly addListeners = new Set<AddListener>();
   private readonly removeListeners = new Set<RemoveListener>();
+  private readonly clearListeners = new Set<ClearListener>();
 
   setBlock(x: number, y: number, z: number, type: BlockType): void {
     const key = posKey(x, y, z);
@@ -75,6 +77,16 @@ export class VoxelWorld {
   onBlockRemoved(cb: RemoveListener): () => void {
     this.removeListeners.add(cb);
     return () => this.removeListeners.delete(cb);
+  }
+
+  onCleared(cb: ClearListener): () => void {
+    this.clearListeners.add(cb);
+    return () => this.clearListeners.delete(cb);
+  }
+
+  clear(): void {
+    this.blocks.clear();
+    for (const l of this.clearListeners) l();
   }
 
   private emitAdd(e: BlockEvent): void {

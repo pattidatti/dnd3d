@@ -49,6 +49,15 @@ export class CharacterController {
     Object.assign(this.input, partial);
   }
 
+  resetInput(): void {
+    this.input.forward = false;
+    this.input.back = false;
+    this.input.left = false;
+    this.input.right = false;
+    this.input.jump = false;
+    this.input.run = false;
+  }
+
   /** yaw i radianer; "framover" er -Z rotert av yaw rundt Y. */
   setYaw(yaw: number): void {
     this.yaw = yaw;

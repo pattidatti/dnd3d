@@ -7,13 +7,28 @@ const HIDDEN_MATRIX = new THREE.Matrix4().makeScale(0, 0, 0);
 const HIDDEN_COLOR = new THREE.Color(1, 1, 1);
 
 // Nabo-offsets for AO (6 kardinale retninger).
-const NEIGHBOR_OFFSETS: ReadonlyArray<readonly [number, number, number]> = [
+const CARDINAL_OFFSETS: ReadonlyArray<readonly [number, number, number]> = [
   [1, 0, 0],
   [-1, 0, 0],
   [0, 1, 0],
   [0, -1, 0],
   [0, 0, 1],
   [0, 0, -1],
+];
+
+// 12 kant-naboer (alle par av to ulike akser, ±1 hver). Disse veier mindre
+// enn kardinale i AO-beregningen, men gir mer nyansert mørkning i hjørner.
+const EDGE_OFFSETS: ReadonlyArray<readonly [number, number, number]> = [
+  [1, 1, 0], [1, -1, 0], [-1, 1, 0], [-1, -1, 0],
+  [1, 0, 1], [1, 0, -1], [-1, 0, 1], [-1, 0, -1],
+  [0, 1, 1], [0, 1, -1], [0, -1, 1], [0, -1, -1],
+];
+
+// Union av kardinal + kant brukt når vi refresher naboer ved endring.
+// Set unngår dupliseringsproblemer hvis vi senere legger til hjørner.
+const ALL_INFLUENCE_OFFSETS: ReadonlyArray<readonly [number, number, number]> = [
+  ...CARDINAL_OFFSETS,
+  ...EDGE_OFFSETS,
 ];
 
 interface PerTypeState {
@@ -50,7 +65,8 @@ export class VoxelRenderer {
       const mesh = new THREE.InstancedMesh(geometry, material, MAX_PER_TYPE);
       mesh.count = 0;
       mesh.frustumCulled = false;
-      mesh.castShadow = true;
+      // Vann er transparent — caster ikke opaque skygge, men tar imot lys.
+      mesh.castShadow = type !== BlockType.Water;
       mesh.receiveShadow = true;
       mesh.userData.blockType = type;
       const colors = new Float32Array(MAX_PER_TYPE * 3);
@@ -68,11 +84,22 @@ export class VoxelRenderer {
 
     world.onBlockAdded((e) => this.onAdded(e));
     world.onBlockRemoved((e) => this.onRemoved(e));
+    world.onCleared(() => this.reset());
 
     world.forEach((x, y, z, type) => {
       this.addInstance(type, posKey(x, y, z), x, y, z);
     });
     world.forEach((x, y, z) => this.refreshAO(x, y, z));
+  }
+
+  reset(): void {
+    for (const [, state] of this.perType) {
+      state.keyToIndex.clear();
+      state.count = 0;
+      state.mesh.count = 0;
+      state.mesh.instanceMatrix.needsUpdate = true;
+      if (state.mesh.instanceColor) state.mesh.instanceColor.needsUpdate = true;
+    }
   }
 
   getMeshes(): THREE.InstancedMesh[] {
@@ -157,7 +184,7 @@ export class VoxelRenderer {
   }
 
   private refreshNeighborAO(x: number, y: number, z: number): void {
-    for (const [dx, dy, dz] of NEIGHBOR_OFFSETS) {
+    for (const [dx, dy, dz] of ALL_INFLUENCE_OFFSETS) {
       this.refreshAO(x + dx, y + dy, z + dz);
     }
   }
@@ -170,13 +197,18 @@ export class VoxelRenderer {
     const index = state.keyToIndex.get(posKey(x, y, z));
     if (index === undefined) return;
 
-    // Tell hvor mange av de 6 nabofelter som er solide. Jo flere,
-    // jo mer "begravet" — darker brightness. Rent enkelt AO-approx.
-    let buried = 0;
-    for (const [dx, dy, dz] of NEIGHBOR_OFFSETS) {
-      if (this.world.hasBlock(x + dx, y + dy, z + dz)) buried += 1;
+    // Vekt kardinale tyngre enn kant-naboer. Skala kalibrert slik at en
+    // helt fri blokk = 1.0 og en helt begravet blokk lander rundt 0.55.
+    let cardinal = 0;
+    for (const [dx, dy, dz] of CARDINAL_OFFSETS) {
+      if (this.world.hasBlock(x + dx, y + dy, z + dz)) cardinal += 1;
     }
-    const brightness = 1 - buried * 0.07; // 1.0 (fritt) → 0.58 (helt begravet)
+    let edge = 0;
+    for (const [dx, dy, dz] of EDGE_OFFSETS) {
+      if (this.world.hasBlock(x + dx, y + dy, z + dz)) edge += 1;
+    }
+    let brightness = 1 - cardinal * 0.07 - edge * 0.025;
+    if (brightness < 0.55) brightness = 0.55;
     this.tmpColor.setScalar(brightness);
     state.mesh.setColorAt(index, this.tmpColor);
     if (state.mesh.instanceColor) state.mesh.instanceColor.needsUpdate = true;

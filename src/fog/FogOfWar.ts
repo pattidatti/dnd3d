@@ -7,6 +7,7 @@ export interface FogEvent {
 }
 
 type Listener = (e: FogEvent) => void;
+type ClearListener = () => void;
 
 export function fogKey(cellX: number, cellZ: number): FogKey {
   return `${cellX}_${cellZ}`;
@@ -16,6 +17,7 @@ export class FogOfWar {
   private readonly revealed = new Set<FogKey>();
   private readonly revealListeners = new Set<Listener>();
   private readonly hideListeners = new Set<Listener>();
+  private readonly fogClearListeners = new Set<ClearListener>();
 
   isRevealed(cellX: number, cellZ: number): boolean {
     return this.revealed.has(fogKey(cellX, cellZ));
@@ -68,6 +70,16 @@ export class FogOfWar {
   onCellHidden(cb: Listener): () => void {
     this.hideListeners.add(cb);
     return () => this.hideListeners.delete(cb);
+  }
+
+  onCleared(cb: ClearListener): () => void {
+    this.fogClearListeners.add(cb);
+    return () => this.fogClearListeners.delete(cb);
+  }
+
+  clearAll(): void {
+    this.revealed.clear();
+    for (const l of this.fogClearListeners) l();
   }
 
   private emit(listeners: Set<Listener>, e: FogEvent): void {

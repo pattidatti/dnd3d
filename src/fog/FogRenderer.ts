@@ -38,6 +38,7 @@ export class FogRenderer {
 
     fog.onCellRevealed((e) => this.removeInstance(e.key));
     fog.onCellHidden((e) => this.addInstance(e));
+    fog.onCleared(() => this.reset());
 
     // Initial state: alle celler i bounds som IKKE er avslørt får fog-instans.
     for (let cz = -WORLD_HALF_CELLS; cz < WORLD_HALF_CELLS; cz++) {
@@ -45,6 +46,18 @@ export class FogRenderer {
         if (!fog.isRevealed(cx, cz)) {
           this.addInstance({ key: fogKey(cx, cz), cellX: cx, cellZ: cz });
         }
+      }
+    }
+  }
+
+  reset(): void {
+    this.keyToIndex.clear();
+    this.count = 0;
+    this.mesh.count = 0;
+    this.mesh.instanceMatrix.needsUpdate = true;
+    for (let cz = -WORLD_HALF_CELLS; cz < WORLD_HALF_CELLS; cz++) {
+      for (let cx = -WORLD_HALF_CELLS; cx < WORLD_HALF_CELLS; cx++) {
+        this.addInstance({ key: fogKey(cx, cz), cellX: cx, cellZ: cz });
       }
     }
   }

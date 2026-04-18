@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import type { VoxelCollider } from '../physics/VoxelCollider';
 
 const MIN_DIST = 2.8;
-const MAX_DIST = 12;
-const DEFAULT_DIST = 6.5;
+const MAX_DIST = 18;
+const DEFAULT_DIST = 9.0;
 const ANCHOR_HEIGHT = 4.8;      // lokalt y-offset fra avatar-fot; ~skulderh\u00f8yde
 const ANCHOR_FORWARD = 0.0;     // liten fremover-forskyvning p\u00e5 ankeret
 const CAM_RADIUS = 0.35;        // sjekkradius for spring-arm

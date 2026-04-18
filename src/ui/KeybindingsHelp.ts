@@ -48,6 +48,7 @@ const SECTIONS: Section[] = [
     title: 'DM',
     bindings: [
       { keys: ['V'], label: 'DM-visning ↔ spiller-visning' },
+      { keys: ['M'], label: 'Kartstyring' },
       { keys: ['Shift', '+', 'klikk'], label: 'Fog: avsl\u00f8r 3×3 (DM)' },
     ],
   },

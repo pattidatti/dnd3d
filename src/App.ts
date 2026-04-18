@@ -3,7 +3,11 @@ import { VoxelWorld } from './world/VoxelWorld';
 import { VoxelRenderer } from './world/VoxelRenderer';
 import { GridOverlay } from './world/GridOverlay';
 import { populateDemoWorld } from './world/DemoWorld';
+import { tickWater } from './world/BlockPalette';
 import { SkyEnvironment } from './render/SkyEnvironment';
+import { PostProcessing } from './render/PostProcessing';
+import { Atmosphere } from './render/Atmosphere';
+import { loadGraphicsQuality, profileFor, type GraphicsQuality } from './render/GraphicsQuality';
 import { CameraController } from './camera/CameraController';
 import { Minimap } from './camera/Minimap';
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
@@ -13,6 +17,9 @@ import { BlockPlacer } from './interaction/BlockPlacer';
 import { AvatarSpawner } from './interaction/AvatarSpawner';
 import { BlockPaletteToolbar } from './ui/BlockPaletteToolbar';
 import { ToolModeToggle, type ToolMode } from './ui/ToolModeToggle';
+import { MoodPanel } from './ui/MoodPanel';
+import { saveGraphicsQuality } from './render/GraphicsQuality';
+import type { Mood } from './render/SkyEnvironment';
 import { IdentityBadge } from './ui/IdentityBadge';
 import { KeybindingsHelp } from './ui/KeybindingsHelp';
 import { randomId } from './character/LocalIdentity';
@@ -24,6 +31,9 @@ import { FogOfWar } from './fog/FogOfWar';
 import { FogRenderer } from './fog/FogRenderer';
 import { FogPlacer } from './fog/FogPlacer';
 import { ViewToggle } from './fog/ViewToggle';
+import { MapStore } from './maps/MapStore';
+import { MapManager } from './maps/MapManager';
+import { MapModal } from './ui/MapModal';
 
 export class App {
   readonly scene: THREE.Scene;
@@ -34,12 +44,15 @@ export class App {
   readonly voxelRenderer: VoxelRenderer;
   readonly gridOverlay: GridOverlay;
   readonly sky: SkyEnvironment;
+  readonly post: PostProcessing;
+  readonly atmosphere: Atmosphere;
   readonly cameraController: CameraController;
   readonly blockPlacer: BlockPlacer;
   readonly toolbar: BlockPaletteToolbar;
   readonly keybindingsHelp: KeybindingsHelp;
   readonly minimap: Minimap;
   readonly toolMode: ToolModeToggle;
+  readonly moodPanel: MoodPanel;
 
   readonly avatars: AvatarManager;
   readonly avatarSpawner: AvatarSpawner;
@@ -59,6 +72,10 @@ export class App {
   readonly fogRenderer: FogRenderer;
   readonly fogPlacer: FogPlacer;
   readonly viewToggle: ViewToggle;
+
+  readonly mapStore: MapStore;
+  readonly mapManager: MapManager;
+  readonly mapModal: MapModal;
 
   private identity!: LocalIdentity;
   private identityBadge!: IdentityBadge;
@@ -85,9 +102,17 @@ export class App {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.85;
+    this.renderer.toneMappingExposure = 0.95;
 
     this.sky = new SkyEnvironment(this.scene, this.renderer);
+
+    const initialQuality: GraphicsQuality = loadGraphicsQuality();
+    this.post = new PostProcessing(this.renderer, this.scene, this.camera, initialQuality);
+    this.sky.applyShadowMapSize(initialQuality);
+
+    this.atmosphere = new Atmosphere();
+    this.atmosphere.setCapacity(profileFor(initialQuality).particles);
+    this.scene.add(this.atmosphere.points);
 
     this.world = new VoxelWorld();
     this.voxelRenderer = new VoxelRenderer(this.world);
@@ -136,7 +161,18 @@ export class App {
 
     this.viewToggle = new ViewToggle(uiMount, this.fogRenderer);
 
+    this.moodPanel = new MoodPanel(uiMount, {
+      initialMood: this.sky.getMood(),
+      initialQuality,
+      onMood: (m) => this.applyMood(m),
+      onQuality: (q) => this.applyQuality(q),
+    });
+
     this.keybindingsHelp = new KeybindingsHelp(uiMount);
+
+    this.mapStore = new MapStore();
+    this.mapManager = new MapManager(this.world, this.fog, this.mapStore);
+    this.mapModal = new MapModal(uiMount, this.mapManager, (msg) => this.showToast(msg));
 
     this.minimap = new Minimap(uiMount, this.scene, this.camera, this.cameraController);
 
@@ -198,6 +234,36 @@ export class App {
     const isDm = this.identity?.isDM ?? false;
     this.toolMode.setDmMode(isDm);
     this.viewToggle.setDmMode(isDm);
+    this.moodPanel.setDmMode(isDm);
+    this.mapModal.setDmMode(isDm);
+  }
+
+  private applyMood(mood: Mood): void {
+    this.sky.setMood(mood);
+    this.post.setMood(mood);
+    // Demp partikler nattestid; full styrke i dagslys.
+    const intensityByMood: Record<Mood, number> = {
+      day: 1.0,
+      dawn: 0.8,
+      dusk: 0.7,
+      night: 0.15,
+    };
+    this.atmosphere.setIntensity(intensityByMood[mood]);
+    // Justér partikkelfarge så den smelter inn med stemningen.
+    const colorByMood: Record<Mood, number> = {
+      day: 0xfff0d0,
+      dawn: 0xffc8a0,
+      dusk: 0xffb090,
+      night: 0x8aa0d8,
+    };
+    this.atmosphere.setColor(colorByMood[mood]);
+  }
+
+  private applyQuality(q: GraphicsQuality): void {
+    saveGraphicsQuality(q);
+    this.post.setQuality(q);
+    this.sky.applyShadowMapSize(q);
+    this.atmosphere.setCapacity(profileFor(q).particles);
   }
 
   start(): void {
@@ -214,6 +280,10 @@ export class App {
 
   private readonly tick = (): void => {
     const dt = Math.min(0.05, this.clock.getDelta());
+
+    this.sky.tick();
+    tickWater(this.clock.elapsedTime);
+    this.atmosphere.tick(this.clock.elapsedTime, this.camera.position);
 
     if (this.cameraMode === 'thirdPerson') {
       this.controller.setYaw(this.thirdPerson.yaw);
@@ -242,7 +312,7 @@ export class App {
       this.cameraController.update();
     }
 
-    this.renderer.render(this.scene, this.camera);
+    this.post.render(dt);
     this.minimap.render();
   };
 
@@ -252,11 +322,17 @@ export class App {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
+    this.post.setSize(w, h);
   };
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     const key = e.key.toLowerCase();
+    if (key === 'm' && this.identity?.isDM) {
+      e.preventDefault();
+      this.mapModal.toggle();
+      return;
+    }
     if (key === 'g') {
       this.gridOverlay.setVisible(!this.gridOverlay.visible);
     }
@@ -319,6 +395,8 @@ export class App {
       this.cameraMode = 'thirdPerson';
       this.thirdPerson.enabled = true;
       this.thirdPerson.yaw = own.yaw ?? 0;
+      this.thirdPerson.setRunningHint(false);
+      this.controller.resetInput();
       this.controller.setPosition(own.x, own.y, own.z);
       this.cameraController.controls.enabled = false;
       this.avatarSpawner.active = false;
@@ -335,6 +413,8 @@ export class App {
       this.cameraMode = 'orbit';
       this.thirdPerson.enabled = false;
       this.thirdPerson.exitPointerLock();
+      this.thirdPerson.setRunningHint(false);
+      this.controller.resetInput();
       this.cameraController.controls.enabled = true;
 
       if (this.hasSavedOrbit) {

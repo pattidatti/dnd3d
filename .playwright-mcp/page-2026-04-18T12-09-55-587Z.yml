@@ -1,0 +1,45 @@
+- generic [active] [ref=e1]:
+  - generic:
+    - generic [ref=e3]:
+      - button "🧱" [ref=e4] [cursor=pointer]
+      - button "⛋" [ref=e5] [cursor=pointer]
+      - button "🌫" [ref=e6] [cursor=pointer]
+    - generic [ref=e7]:
+      - button "1 Stein" [ref=e8] [cursor=pointer]:
+        - generic [ref=e9]: "1"
+        - generic [ref=e11]: Stein
+      - button "2 Puss" [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: "2"
+        - generic [ref=e15]: Puss
+      - button "3 Tegl" [ref=e16] [cursor=pointer]:
+        - generic [ref=e17]: "3"
+        - generic [ref=e19]: Tegl
+      - button "4 Takstein" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]: "4"
+        - generic [ref=e23]: Takstein
+      - button "5 Tre" [ref=e24] [cursor=pointer]:
+        - generic [ref=e25]: "5"
+        - generic [ref=e27]: Tre
+      - button "6 Jord" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: "6"
+        - generic [ref=e31]: Jord
+      - button "7 Gress" [ref=e32] [cursor=pointer]:
+        - generic [ref=e33]: "7"
+        - generic [ref=e35]: Gress
+      - button "8 Løv" [ref=e36] [cursor=pointer]:
+        - generic [ref=e37]: "8"
+        - generic [ref=e39]: Løv
+      - button "9 Stamme" [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: "9"
+        - generic [ref=e43]: Stamme
+      - button "Sand" [ref=e44] [cursor=pointer]:
+        - generic [ref=e46]: Sand
+      - button "Vann" [ref=e47] [cursor=pointer]:
+        - generic [ref=e49]: Vann
+      - button "Skifer" [ref=e50] [cursor=pointer]:
+        - generic [ref=e52]: Skifer
+    - button "👁 DM-visning" [ref=e53] [cursor=pointer]
+    - generic [ref=e55]:
+      - generic [ref=e57]: Tester (T)
+      - generic [ref=e58]: DM
+      - button "Endre" [ref=e59] [cursor=pointer]

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BlockType } from '../world/BlockTypes';
+import { BlockType } from '../world/BlockPalette';
 import { VoxelWorld } from '../world/VoxelWorld';
 import { VoxelRenderer } from '../world/VoxelRenderer';
 

@@ -1,0 +1,65 @@
+- generic [ref=e1]:
+  - generic:
+    - generic [ref=e3]:
+      - button "🧱" [ref=e4] [cursor=pointer]
+      - button "⛋" [ref=e5] [cursor=pointer]
+    - generic [ref=e6]:
+      - button "1 Stein" [ref=e7] [cursor=pointer]:
+        - generic [ref=e8]: "1"
+        - generic [ref=e10]: Stein
+      - button "2 Puss" [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: "2"
+        - generic [ref=e14]: Puss
+      - button "3 Tegl" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: "3"
+        - generic [ref=e18]: Tegl
+      - button "4 Takstein" [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: "4"
+        - generic [ref=e22]: Takstein
+      - button "5 Tre" [ref=e23] [cursor=pointer]:
+        - generic [ref=e24]: "5"
+        - generic [ref=e26]: Tre
+      - button "6 Jord" [ref=e27] [cursor=pointer]:
+        - generic [ref=e28]: "6"
+        - generic [ref=e30]: Jord
+      - button "7 Gress" [ref=e31] [cursor=pointer]:
+        - generic [ref=e32]: "7"
+        - generic [ref=e34]: Gress
+      - button "8 Løv" [ref=e35] [cursor=pointer]:
+        - generic [ref=e36]: "8"
+        - generic [ref=e38]: Løv
+      - button "9 Stamme" [ref=e39] [cursor=pointer]:
+        - generic [ref=e40]: "9"
+        - generic [ref=e42]: Stamme
+      - button "Sand" [ref=e43] [cursor=pointer]:
+        - generic [ref=e45]: Sand
+      - button "Vann" [ref=e46] [cursor=pointer]:
+        - generic [ref=e48]: Vann
+      - button "Skifer" [ref=e49] [cursor=pointer]:
+        - generic [ref=e51]: Skifer
+  - generic [ref=e54]:
+    - heading "Hvem er du?" [level=2] [ref=e55]
+    - paragraph [ref=e56]: Velg navn, farge og initial. Lagres lokalt i nettleseren.
+    - generic [ref=e57]:
+      - text: Navn
+      - textbox "Navn" [active] [ref=e58]:
+        - /placeholder: F.eks. Aragorn
+    - generic [ref=e59]:
+      - text: Initial (1–2 bokstaver)
+      - textbox "Initial (1–2 bokstaver)" [ref=e60]:
+        - /placeholder: A
+    - generic [ref=e61]:
+      - generic [ref=e62]: Farge
+      - generic [ref=e63]:
+        - button [ref=e64] [cursor=pointer]
+        - button [ref=e65] [cursor=pointer]
+        - button [ref=e66] [cursor=pointer]
+        - button [ref=e67] [cursor=pointer]
+        - button [ref=e68] [cursor=pointer]
+        - button [ref=e69] [cursor=pointer]
+        - button [ref=e70] [cursor=pointer]
+        - button [ref=e71] [cursor=pointer]
+    - generic [ref=e72]:
+      - checkbox "Jeg er DM (kan flytte alle tokens)" [ref=e73]
+      - generic [ref=e74]: Jeg er DM (kan flytte alle tokens)
+    - button "Fortsett" [ref=e77] [cursor=pointer]

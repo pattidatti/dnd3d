@@ -1,5 +1,3 @@
-import { randomId } from './Token';
-
 export interface LocalIdentity {
   uid: string;
   name: string;
@@ -44,4 +42,8 @@ export function makeIdentity(name: string, color: string, initial: string, isDM:
     initial,
     isDM,
   };
+}
+
+export function randomId(): string {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 }

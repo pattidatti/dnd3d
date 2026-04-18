@@ -1,4 +1,4 @@
-import { loadIdentity, makeIdentity, saveIdentity, type LocalIdentity } from '../tokens/LocalIdentity';
+import { loadIdentity, makeIdentity, saveIdentity, type LocalIdentity } from '../character/LocalIdentity';
 
 const DEFAULT_COLORS = [
   '#e05b5b',

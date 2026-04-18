@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CELL_SIZE, cellCenter } from '../tokens/Token';
+import { CELL_SIZE, cellCenter } from '../world/Grid';
 import { FogOfWar, fogKey, type FogEvent, type FogKey } from './FogOfWar';
 
 const WORLD_HALF_CELLS = 50; // ±50 celler = 100×100 = 10 000

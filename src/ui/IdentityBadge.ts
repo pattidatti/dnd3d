@@ -1,4 +1,4 @@
-import type { LocalIdentity } from '../tokens/LocalIdentity';
+import type { LocalIdentity } from '../character/LocalIdentity';
 
 export class IdentityBadge {
   private readonly root: HTMLDivElement;

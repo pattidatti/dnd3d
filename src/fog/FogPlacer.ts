@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { cellIndex } from '../tokens/Token';
+import { cellIndex } from '../world/Grid';
 import { FogOfWar } from './FogOfWar';
 
 const DRAG_THRESHOLD_PX = 4;

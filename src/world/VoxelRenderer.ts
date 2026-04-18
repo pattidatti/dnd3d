@@ -1,9 +1,20 @@
 import * as THREE from 'three';
-import { ALL_BLOCK_TYPES, BlockType, getMaterial } from './BlockTypes';
+import { ALL_BLOCK_TYPES, BlockType, getMaterial } from './BlockPalette';
 import { VoxelWorld, posKey, type BlockEvent, type PosKey } from './VoxelWorld';
 
 const MAX_PER_TYPE = 250_000;
 const HIDDEN_MATRIX = new THREE.Matrix4().makeScale(0, 0, 0);
+const HIDDEN_COLOR = new THREE.Color(1, 1, 1);
+
+// Nabo-offsets for AO (6 kardinale retninger).
+const NEIGHBOR_OFFSETS: ReadonlyArray<readonly [number, number, number]> = [
+  [1, 0, 0],
+  [-1, 0, 0],
+  [0, 1, 0],
+  [0, -1, 0],
+  [0, 0, 1],
+  [0, 0, -1],
+];
 
 interface PerTypeState {
   mesh: THREE.InstancedMesh;
@@ -23,20 +34,28 @@ export interface RaycastHit {
 export class VoxelRenderer {
   readonly root = new THREE.Group();
   private readonly perType = new Map<BlockType, PerTypeState>();
+  private readonly world: VoxelWorld;
   private readonly tmpMatrix = new THREE.Matrix4();
   private readonly tmpPos = new THREE.Vector3();
   private readonly tmpQuat = new THREE.Quaternion();
   private readonly tmpScale = new THREE.Vector3(1, 1, 1);
+  private readonly tmpColor = new THREE.Color();
 
   constructor(world: VoxelWorld) {
+    this.world = world;
     const geometry = new THREE.BoxGeometry(1, 1, 1);
 
     for (const type of ALL_BLOCK_TYPES) {
       const material = getMaterial(type);
       const mesh = new THREE.InstancedMesh(geometry, material, MAX_PER_TYPE);
       mesh.count = 0;
-      mesh.frustumCulled = false; // kart kan være stort; skip frustum-regning per instans
+      mesh.frustumCulled = false;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
       mesh.userData.blockType = type;
+      const colors = new Float32Array(MAX_PER_TYPE * 3);
+      colors.fill(1); // start hvitt — AO-refresh mørkner senere
+      mesh.instanceColor = new THREE.InstancedBufferAttribute(colors, 3);
       this.root.add(mesh);
 
       this.perType.set(type, {
@@ -50,10 +69,10 @@ export class VoxelRenderer {
     world.onBlockAdded((e) => this.onAdded(e));
     world.onBlockRemoved((e) => this.onRemoved(e));
 
-    // Initial state: rebygg dersom world ikke er tom
     world.forEach((x, y, z, type) => {
       this.addInstance(type, posKey(x, y, z), x, y, z);
     });
+    world.forEach((x, y, z) => this.refreshAO(x, y, z));
   }
 
   getMeshes(): THREE.InstancedMesh[] {
@@ -80,10 +99,13 @@ export class VoxelRenderer {
 
   private onAdded(e: BlockEvent): void {
     this.addInstance(e.type, e.key, e.x, e.y, e.z);
+    this.refreshAO(e.x, e.y, e.z);
+    this.refreshNeighborAO(e.x, e.y, e.z);
   }
 
   private onRemoved(e: BlockEvent): void {
     this.removeInstance(e.type, e.key);
+    this.refreshNeighborAO(e.x, e.y, e.z);
   }
 
   private addInstance(type: BlockType, key: PosKey, x: number, y: number, z: number): void {
@@ -111,19 +133,52 @@ export class VoxelRenderer {
 
     const lastIndex = state.count - 1;
     if (index !== lastIndex) {
-      // Swap-and-pop: flytt siste instans inn i slotet som frigjøres.
       const lastKey = state.indexToKey[lastIndex];
       state.mesh.getMatrixAt(lastIndex, this.tmpMatrix);
       state.mesh.setMatrixAt(index, this.tmpMatrix);
+      if (state.mesh.instanceColor) {
+        state.mesh.getColorAt(lastIndex, this.tmpColor);
+        state.mesh.setColorAt(index, this.tmpColor);
+      }
       state.indexToKey[index] = lastKey;
       state.keyToIndex.set(lastKey, index);
     }
 
     state.mesh.setMatrixAt(lastIndex, HIDDEN_MATRIX);
+    if (state.mesh.instanceColor) {
+      state.mesh.setColorAt(lastIndex, HIDDEN_COLOR);
+      state.mesh.instanceColor.needsUpdate = true;
+    }
     state.keyToIndex.delete(key);
     state.indexToKey[lastIndex] = '';
     state.count -= 1;
     state.mesh.count = state.count;
     state.mesh.instanceMatrix.needsUpdate = true;
+  }
+
+  private refreshNeighborAO(x: number, y: number, z: number): void {
+    for (const [dx, dy, dz] of NEIGHBOR_OFFSETS) {
+      this.refreshAO(x + dx, y + dy, z + dz);
+    }
+  }
+
+  private refreshAO(x: number, y: number, z: number): void {
+    const type = this.world.getBlock(x, y, z);
+    if (type === undefined) return;
+    const state = this.perType.get(type);
+    if (!state) return;
+    const index = state.keyToIndex.get(posKey(x, y, z));
+    if (index === undefined) return;
+
+    // Tell hvor mange av de 6 nabofelter som er solide. Jo flere,
+    // jo mer "begravet" — darker brightness. Rent enkelt AO-approx.
+    let buried = 0;
+    for (const [dx, dy, dz] of NEIGHBOR_OFFSETS) {
+      if (this.world.hasBlock(x + dx, y + dy, z + dz)) buried += 1;
+    }
+    const brightness = 1 - buried * 0.07; // 1.0 (fritt) → 0.58 (helt begravet)
+    this.tmpColor.setScalar(brightness);
+    state.mesh.setColorAt(index, this.tmpColor);
+    if (state.mesh.instanceColor) state.mesh.instanceColor.needsUpdate = true;
   }
 }

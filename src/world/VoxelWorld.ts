@@ -1,4 +1,4 @@
-import type { BlockType } from './BlockTypes';
+import type { BlockType } from './BlockPalette';
 
 export type PosKey = string;
 

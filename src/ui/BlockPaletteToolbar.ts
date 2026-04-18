@@ -17,6 +17,7 @@ export class BlockPaletteToolbar {
   private readonly buttons = new Map<BlockType, HTMLButtonElement>();
   private readonly listeners = new Set<(t: BlockType) => void>();
   private readonly keyToType = new Map<string, BlockType>();
+  private enabled = true;
 
   constructor(mount: HTMLElement) {
     const root = document.createElement('div');
@@ -58,6 +59,10 @@ export class BlockPaletteToolbar {
     return () => this.listeners.delete(cb);
   }
 
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
   select(type: BlockType): void {
     this.selected = type;
     for (const [t, btn] of this.buttons) {
@@ -94,9 +99,8 @@ export class BlockPaletteToolbar {
   }
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {
+    if (!this.enabled) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-    // Ikke "snap" blokk-hotkey når man er i pointer-lock (tredjeperson);
-    // WASD+shift brukes der og 1-3 burde ikke lekke inn.
     if (document.pointerLockElement) return;
     const key = e.key.toLowerCase();
     const type = this.keyToType.get(key);

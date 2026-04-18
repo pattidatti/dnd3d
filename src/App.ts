@@ -14,6 +14,8 @@ import { AvatarSpawner } from './interaction/AvatarSpawner';
 import { BlockPaletteToolbar } from './ui/BlockPaletteToolbar';
 import { ToolModeToggle, type ToolMode } from './ui/ToolModeToggle';
 import { IdentityBadge } from './ui/IdentityBadge';
+import { KeybindingsHelp } from './ui/KeybindingsHelp';
+import { randomId } from './character/LocalIdentity';
 import { ensureIdentity, openIdentityModal } from './ui/IdentityModal';
 import { AvatarManager } from './character/AvatarManager';
 import type { LocalIdentity } from './character/LocalIdentity';
@@ -35,6 +37,7 @@ export class App {
   readonly cameraController: CameraController;
   readonly blockPlacer: BlockPlacer;
   readonly toolbar: BlockPaletteToolbar;
+  readonly keybindingsHelp: KeybindingsHelp;
   readonly minimap: Minimap;
   readonly toolMode: ToolModeToggle;
 
@@ -132,6 +135,8 @@ export class App {
     this.applyToolMode(this.toolMode.getMode());
 
     this.viewToggle = new ViewToggle(uiMount, this.fogRenderer);
+
+    this.keybindingsHelp = new KeybindingsHelp(uiMount);
 
     this.minimap = new Minimap(uiMount, this.scene, this.camera, this.cameraController);
 
@@ -292,10 +297,18 @@ export class App {
 
   private toggleCameraMode(): void {
     if (this.cameraMode === 'orbit') {
-      const own = this.identity && this.avatars.getByOwner(this.identity.uid);
-      if (!own) {
-        console.warn('Ingen egen avatar — spawn en f\u00f8rst via ToolMode=N.');
+      if (!this.identity) {
+        this.showToast('Laster identitet…');
         return;
+      }
+      let own = this.avatars.getByOwner(this.identity.uid);
+      if (!own) {
+        own = this.autoSpawnOwnAvatar();
+        if (!own) {
+          this.showToast('Fant ikke trygg posisjon å spawne på');
+          return;
+        }
+        this.showToast('Spawnet avatar');
       }
       // Lagre orbit-kamera slik at retur gjenoppretter eksakt samme pose.
       this.savedOrbitPos.copy(this.camera.position);
@@ -311,6 +324,8 @@ export class App {
       this.avatarSpawner.active = false;
       this.blockPlacer.active = false;
       this.fogPlacer.active = false;
+      this.toolbar.setEnabled(false);
+      this.toolMode.setEnabled(false);
       this.updateModeIndicator();
       if (!this.shownTpHint) {
         this.showTpHint();
@@ -335,6 +350,8 @@ export class App {
         }
       }
       this.cameraController.controls.update();
+      this.toolbar.setEnabled(true);
+      this.toolMode.setEnabled(true);
       this.applyToolMode(this.toolMode.getMode());
       this.updateModeIndicator();
     }
@@ -362,5 +379,48 @@ export class App {
       hint.classList.add('fade');
       setTimeout(() => hint.remove(), 800);
     }, 4500);
+  }
+
+  private showToast(message: string): void {
+    const el = document.createElement('div');
+    el.className = 'app-toast';
+    el.textContent = message;
+    (document.getElementById('ui') ?? document.body).appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 400);
+    }, 2200);
+  }
+
+  private autoSpawnOwnAvatar(): ReturnType<AvatarManager['getByOwner']> | undefined {
+    // Bruk orbit-kamerats target som \u00f8nsket XZ, fallback origo.
+    const t = this.cameraController.controls.target;
+    const wantX = Number.isFinite(t.x) ? t.x : 0;
+    const wantZ = Number.isFinite(t.z) ? t.z : 0;
+
+    // Finn topp av solid s\u00f8yle under (wantX, wantZ). S\u00f8k ned fra Y=200.
+    const px = Math.floor(wantX);
+    const pz = Math.floor(wantZ);
+    let topY = -1;
+    for (let y = 200; y >= 0; y--) {
+      if (this.collider.solid(px, y, pz)) { topY = y; break; }
+    }
+    const baseY = topY >= 0 ? topY + 1 : 40; // fall fra luft hvis tom
+
+    const state = {
+      id: 'avatar_' + randomId(),
+      ownerUid: this.identity.uid,
+      name: this.identity.name,
+      color: this.identity.color,
+      initial: this.identity.initial,
+      x: px + 0.5,
+      y: baseY,
+      z: pz + 0.5,
+      yaw: 0,
+    };
+    this.avatars.add(state);
+    this.avatars.select(state.id);
+    return this.avatars.get(state.id);
   }
 }

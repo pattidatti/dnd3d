@@ -59,6 +59,7 @@ export class ViewToggle {
   private readonly onKeyDown = (e: KeyboardEvent): void => {
     if (!this.isDm) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (document.pointerLockElement) return;
     if (e.key.toLowerCase() === 'v') this.toggle();
   };
 }

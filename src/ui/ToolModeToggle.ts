@@ -7,6 +7,7 @@ export class ToolModeToggle {
   private readonly tokenBtn: HTMLButtonElement;
   private readonly fogBtn: HTMLButtonElement;
   private readonly listeners = new Set<(m: ToolMode) => void>();
+  private enabled = true;
 
   constructor(mount: HTMLElement) {
     const root = document.createElement('div');
@@ -43,6 +44,10 @@ export class ToolModeToggle {
     for (const l of this.listeners) l(mode);
   }
 
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
   setDmMode(isDm: boolean): void {
     this.isDm = isDm;
     this.fogBtn.style.display = isDm ? '' : 'none';
@@ -72,7 +77,9 @@ export class ToolModeToggle {
   }
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {
+    if (!this.enabled) return;
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (document.pointerLockElement) return;
     const key = e.key.toLowerCase();
     if (key === 'b') this.setMode('blocks');
     else if (key === 'n') this.setMode('tokens');

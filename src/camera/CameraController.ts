@@ -57,6 +57,9 @@ export class CameraController {
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    // Ikke reager n\u00e5r OrbitControls er deaktivert (tredjeperson) eller
+    // n\u00e5r musen er l\u00e5st (gameplay).
+    if (!this.controls.enabled || document.pointerLockElement) return;
     const key = e.key.toLowerCase();
     if (key === 't') {
       this.toggleTopdown();

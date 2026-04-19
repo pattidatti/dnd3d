@@ -1,16 +1,24 @@
-import { FogRenderer } from './FogRenderer';
+import type { DarknessPass } from '../lighting/DarknessPass';
+
+/**
+ * DM-overlay-toggle: erstatter den gamle ViewToggle. DM ser alltid full
+ * scene, men kan velge om mørket vises som transparent overlay (slik at DM
+ * skjønner hva spillere ser) eller som full opasitet (samme som spillere).
+ *
+ * Spillere har alltid full opasitet og ser ikke knappen.
+ */
 
 export type ViewMode = 'dm' | 'player';
 
-const DM_OPACITY = 0.35;
+const DM_OPACITY = 0.40;
 const PLAYER_OPACITY = 1.0;
 
-export class ViewToggle {
+export class DarknessViewToggle {
   private mode: ViewMode = 'dm';
   private isDm = false;
   private readonly btn: HTMLButtonElement;
 
-  constructor(mount: HTMLElement, private readonly fogRenderer: FogRenderer) {
+  constructor(mount: HTMLElement, private readonly darkness: DarknessPass) {
     this.btn = document.createElement('button');
     this.btn.className = 'view-toggle';
     this.btn.type = 'button';
@@ -20,20 +28,18 @@ export class ViewToggle {
     mount.appendChild(this.btn);
 
     this.applyMode();
-
     window.addEventListener('keydown', this.onKeyDown);
   }
 
   setDmMode(isDm: boolean): void {
     this.isDm = isDm;
     if (!isDm) {
-      // Spillere skal alltid se opaque fog
       this.mode = 'player';
-      this.fogRenderer.setOpacity(PLAYER_OPACITY);
+      this.darkness.setGlobalOpacity(PLAYER_OPACITY);
       this.btn.style.display = 'none';
     } else {
       this.mode = 'dm';
-      this.fogRenderer.setOpacity(DM_OPACITY);
+      this.darkness.setGlobalOpacity(DM_OPACITY);
       this.btn.style.display = '';
       this.applyMode();
     }
@@ -51,7 +57,7 @@ export class ViewToggle {
 
   private applyMode(): void {
     const opacity = this.mode === 'dm' ? DM_OPACITY : PLAYER_OPACITY;
-    this.fogRenderer.setOpacity(opacity);
+    this.darkness.setGlobalOpacity(opacity);
     this.btn.textContent = this.mode === 'dm' ? '👁 DM-visning' : '👁 Spillervisning';
     this.btn.classList.toggle('player-mode', this.mode === 'player');
   }

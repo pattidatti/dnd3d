@@ -269,6 +269,7 @@ Lagres under `localStorage["dnd3d.maps.v2"]`. Ingen migrering fra v1 (voxel-maps
 - **Debug-hook:** `App` tilgjengelig som `window.app` i nettleser-konsollen.
 - **Konstanter duplisert:** `WORLD_HALF_CELLS=50` finnes i `world/Terrain.ts`, `fog/FogRenderer.ts`, `fog/FogPlacer.ts`. `CELL_SIZE=5` i `world/Grid.ts` og brukt bredt. Hold i sync manuelt til evt. delt `constants.ts`.
 - **Kenney vs KayKit-stil:** begge pakker er flat-farget low-poly. Når de blandes med PBR-shading + tone mapping blir resultatet litt glatt-plast-aktig. Kan forbedres med HDRI-environment eller egen toon-shader-pass — men aksepter det er bytte av estetikk.
+- **Map-generering:** se `docs/MAP_DESIGN_RULES.md` for designregler (focal points, layering, organiske klynger, story props, asymmetri, spacing). Generator-koden ligger i `src/generator/`.
 
 ## Kjente mangler og risiko
 

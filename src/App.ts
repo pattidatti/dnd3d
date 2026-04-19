@@ -10,6 +10,7 @@ import { PropWorld } from './world/PropWorld';
 import { GltfCache } from './assets/GltfCache';
 import { InstancedPropRenderer } from './assets/InstancedPropRenderer';
 import { AnimationLibrary } from './assets/AnimationLibrary';
+import { getProp } from './assets/AssetRegistry';
 import { CameraController } from './camera/CameraController';
 import { ThirdPersonCamera } from './camera/ThirdPersonCamera';
 import { PropPlacer } from './interaction/PropPlacer';
@@ -17,6 +18,8 @@ import { PropToolbar } from './ui/PropToolbar';
 import { MapStore } from './maps/MapStore';
 import { MapManager } from './maps/MapManager';
 import { MapBar } from './ui/MapBar';
+import { MapGenerator } from './generator/MapGenerator';
+import { GeneratorBar } from './ui/GeneratorBar';
 import { RapierWorld } from './physics/RapierWorld';
 import { TerrainCollider } from './physics/TerrainCollider';
 import { PropCollider } from './physics/PropCollider';
@@ -24,16 +27,19 @@ import { CHAR_HEIGHT, CharacterController } from './physics/CharacterController'
 import { AvatarManager } from './character/AvatarManager';
 import { ClassPicker } from './ui/ClassPicker';
 import { ensureIdentity, saveIdentity, randomId, type LocalIdentity } from './character/LocalIdentity';
-import { FogOfWar } from './fog/FogOfWar';
-import { FogRenderer } from './fog/FogRenderer';
-import { FogPlacer } from './fog/FogPlacer';
-import { ViewToggle } from './fog/ViewToggle';
+import { LightRegistry } from './lighting/LightRegistry';
+import { TorchPropRenderer } from './lighting/TorchPropRenderer';
+import { DarknessPass } from './lighting/DarknessPass';
+import { DarknessViewToggle } from './ui/DarknessViewToggle';
+import { LightRadiusPanel } from './ui/LightRadiusPanel';
 import { IdentityBadge } from './ui/IdentityBadge';
 import { KeybindingsHelp } from './ui/KeybindingsHelp';
 
 /**
- * Fase 4-App: alt fra før + Rapier + KayKit-karakterer + tredjeperson.
- * Tab = toggle orbit ↔ tredjeperson (krever avatar).
+ * App er øverste lim-laget. Eier scene-graf, fysikk, kamera-kontrollere,
+ * UI-paneler og render-løkka. Tab veksler mellom orbit (DM-arbeid) og
+ * tredjeperson (spilling). Mørke + lys er alltid aktivt; spillere og torches
+ * borer hull i mørket via DarknessPass.
  */
 export class App {
   readonly scene: THREE.Scene;
@@ -60,6 +66,8 @@ export class App {
   readonly mapStore: MapStore;
   readonly mapManager: MapManager;
   readonly mapBar: MapBar;
+  readonly mapGenerator: MapGenerator;
+  readonly generatorBar: GeneratorBar;
 
   readonly rapier: RapierWorld;
   terrainCollider: TerrainCollider | null = null;
@@ -71,10 +79,11 @@ export class App {
   identity: LocalIdentity;
   private ownAvatarId: string | null = null;
 
-  readonly fog: FogOfWar;
-  readonly fogRenderer: FogRenderer;
-  readonly fogPlacer: FogPlacer;
-  readonly viewToggle: ViewToggle;
+  readonly lights: LightRegistry;
+  readonly torchRenderer: TorchPropRenderer;
+  readonly darknessPass: DarknessPass;
+  readonly darknessViewToggle: DarknessViewToggle;
+  readonly lightRadiusPanel: LightRadiusPanel;
   readonly identityBadge: IdentityBadge;
   readonly keybindingsHelp: KeybindingsHelp;
 
@@ -140,6 +149,13 @@ export class App {
     this.propRenderer = new InstancedPropRenderer(this.gltfCache);
     this.scene.add(this.propRenderer.root);
 
+    // Lyssystemet: registry + procedural torch-renderer. Må opprettes før
+    // AvatarManager (som registrerer spiller-lys) og PropPlacer (som trenger
+    // torchRenderer for ghost + raycast).
+    this.lights = new LightRegistry();
+    this.torchRenderer = new TorchPropRenderer(this.propWorld, this.lights);
+    this.scene.add(this.torchRenderer.root);
+
     this.anims = new AnimationLibrary(this.gltfCache);
 
     this.cameraController = new CameraController(this.camera, canvas);
@@ -148,12 +164,24 @@ export class App {
 
     this.thirdPerson = new ThirdPersonCamera(this.camera, canvas);
 
+    // Standard prop-rendering. For procedurale assets (torches) returnerer
+    // ensureLoaded null og addProp er no-op — TorchPropRenderer eier dem.
     this.propWorld.onAdded(async (p) => {
+      const def = getProp(p.assetKey);
+      if (def?.procedural) return;
       const ok = await this.propRenderer.ensureLoaded(p.assetKey);
       if (ok) this.propRenderer.addProp(p);
     });
-    this.propWorld.onUpdated((p) => this.propRenderer.updateProp(p));
-    this.propWorld.onRemoved((id, key) => this.propRenderer.removeProp(id, key));
+    this.propWorld.onUpdated((p) => {
+      const def = getProp(p.assetKey);
+      if (def?.procedural) return;
+      this.propRenderer.updateProp(p);
+    });
+    this.propWorld.onRemoved((id, key) => {
+      const def = getProp(key);
+      if (def?.procedural) return;
+      this.propRenderer.removeProp(id, key);
+    });
 
     populateDemoProps(this.propWorld, this.terrain);
 
@@ -167,6 +195,7 @@ export class App {
       this.propRenderer,
       this.propWorld,
       this.gltfCache,
+      this.torchRenderer,
     );
 
     this.propToolbar = new PropToolbar(uiMount);
@@ -186,8 +215,16 @@ export class App {
       () => this.rebuildTerrain(),
     );
 
+    this.mapGenerator = new MapGenerator(this.terrain, this.propWorld);
+    this.generatorBar = new GeneratorBar(
+      uiMount,
+      this.mapGenerator,
+      (m) => this.showToast(m),
+      () => this.rebuildTerrain(),
+    );
+
     this.identity = ensureIdentity();
-    this.avatars = new AvatarManager(this.gltfCache, this.anims);
+    this.avatars = new AvatarManager(this.gltfCache, this.anims, this.lights);
     this.scene.add(this.avatars.root);
 
     this.classPicker = new ClassPicker(uiMount, this.identity.classKey);
@@ -197,11 +234,18 @@ export class App {
       void this.respawnOwnAvatar();
     });
 
-    this.fog = new FogOfWar();
-    this.fogRenderer = new FogRenderer(this.fog, this.terrain);
-    this.scene.add(this.fogRenderer.root);
-    this.fogPlacer = new FogPlacer(this.camera, canvas, this.fog, this.terrainMesh.mesh);
-    this.viewToggle = new ViewToggle(uiMount, this.fogRenderer);
+    // Mørke-pass — settes inn rett etter RenderPass i composeren. Bruker
+    // depth-texturen som PostProcessing eier.
+    this.darknessPass = new DarknessPass(
+      this.camera,
+      this.lights,
+      this.post.depthTexture,
+      { minDarkness: 0.88, globalOpacity: 1.0 },
+    );
+    this.post.setDarknessPass(this.darknessPass);
+
+    this.darknessViewToggle = new DarknessViewToggle(uiMount, this.darknessPass);
+    this.lightRadiusPanel = new LightRadiusPanel(uiMount, this.lights);
 
     this.identityBadge = new IdentityBadge(uiMount, this.identity, (isDm) => {
       this.identity = { ...this.identity, isDM: isDm };
@@ -283,11 +327,10 @@ export class App {
 
     this.sky.tick();
     this.atmosphere.tick(this.clock.elapsedTime, this.camera.position);
+    this.torchRenderer.tick(this.clock.elapsedTime);
 
     this.rapier.step(dt);
 
-    // Fog-mode aktiv kun når DM + R-modus er valgt.
-    // (håndteres i onKeyDown via toggle.)
     if (this.cameraMode === 'thirdPerson' && this.controller && this.ownAvatarId) {
       this.controller.setYaw(this.thirdPerson.yaw);
       this.controller.update(dt);
@@ -312,6 +355,10 @@ export class App {
 
     this.avatars.tick(dt);
     this.terrainMesh.tick(this.clock.elapsedTime);
+
+    // Oppdater mørke-pass før vi rendrer composeren.
+    this.darknessPass.syncUniforms();
+
     this.post.render(dt);
   };
 
@@ -334,9 +381,6 @@ export class App {
     }
     if (e.key === 'Escape') {
       if (this.cameraMode === 'thirdPerson') this.thirdPerson.exitPointerLock();
-    }
-    if (key === 'r' && this.identity.isDM && this.cameraMode === 'orbit') {
-      this.toggleFogMode();
     }
     if (this.cameraMode === 'thirdPerson' && this.controller) {
       if (key === 'w') this.controller.setInput({ forward: true });
@@ -412,29 +456,12 @@ export class App {
   rebuildTerrain(): void {
     this.terrainMesh.rebuild();
     this.terrainCollider?.build();
-    this.fogRenderer.rebuildGeometryForTerrainChange();
   }
 
   private applyDmRole(): void {
     const isDm = this.identity.isDM;
-    this.viewToggle.setDmMode(isDm);
-    if (!isDm && this.fogPlacer.active) {
-      this.fogPlacer.active = false;
-      this.cameraController.controls.enabled = true;
-    }
-  }
-
-  private toggleFogMode(): void {
-    this.fogPlacer.active = !this.fogPlacer.active;
-    if (this.fogPlacer.active) {
-      this.propPlacer.active = false;
-      this.propToolbar.setSelected(null);
-      this.cameraController.controls.enabled = false;
-      this.showToast('Fog-modus: klikk = toggle, Shift+klikk = 3×3');
-    } else {
-      this.cameraController.controls.enabled = true;
-      this.showToast('Fog-modus av');
-    }
+    this.darknessViewToggle.setDmMode(isDm);
+    this.lightRadiusPanel.setDmMode(isDm);
   }
 
   private showToast(message: string): void {

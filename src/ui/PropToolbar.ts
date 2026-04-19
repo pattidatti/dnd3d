@@ -6,6 +6,7 @@ const CATEGORIES: { id: AssetCategory; label: string }[] = [
   { id: 'vegetation', label: 'Vegetasjon' },
   { id: 'terrain', label: 'Terreng' },
   { id: 'structure', label: 'Bygg' },
+  { id: 'lighting', label: 'Lys' },
   { id: 'castle', label: 'Slott' },
   { id: 'town', label: 'By' },
 ];

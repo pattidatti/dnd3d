@@ -38,9 +38,8 @@ const SECTIONS: Section[] = [
   {
     title: 'DM',
     bindings: [
-      { keys: ['R'], label: 'Fog reveal-modus' },
-      { keys: ['V'], label: 'DM ↔ spiller-visning' },
-      { keys: ['Shift', '+', 'klikk'], label: 'Fog: avsl\u00f8r 3×3' },
+      { keys: ['V'], label: 'DM-overlay ↔ spiller-visning av m\u00f8rket' },
+      { keys: ['Slider'], label: 'Justér spiller-lysradius i panelet' },
     ],
   },
   {

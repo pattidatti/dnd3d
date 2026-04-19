@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { getProp } from '../assets/AssetRegistry';
 import type { GltfCache } from '../assets/GltfCache';
 import type { InstancedPropRenderer } from '../assets/InstancedPropRenderer';
+import type { TorchPropRenderer } from '../lighting/TorchPropRenderer';
 import { PropWorld, randomPropId, type PropState } from '../world/PropWorld';
 
 /**
@@ -26,6 +27,7 @@ export class PropPlacer {
     private readonly propRenderer: InstancedPropRenderer,
     private readonly propWorld: PropWorld,
     private readonly gltfCache: GltfCache,
+    private readonly torchRenderer: TorchPropRenderer | null = null,
   ) {
     this.ghostGroup.visible = false;
     this.scene.add(this.ghostGroup);
@@ -49,6 +51,17 @@ export class PropPlacer {
     const def = getProp(assetKey);
     if (!def) return;
     const gen = ++this.ghostPromise;
+
+    if (def.procedural) {
+      // Procedurale assets bygger sin egen ghost (ikke GLTF). For nå er torch
+      // det eneste; legg til flere via et lite registry hvis det vokser.
+      if (assetKey === 'torch' && this.torchRenderer) {
+        this.ghostGroup.clear();
+        this.ghostGroup.add(this.torchRenderer.buildGhost());
+      }
+      return;
+    }
+
     // Sørg for at asset er lastet i InstancedPropRenderer (for raycast), og bygg ghost.
     await this.propRenderer.ensureLoaded(assetKey);
     if (gen !== this.ghostPromise) return;
@@ -96,9 +109,14 @@ export class PropPlacer {
       return;
     }
     this.ghostGroup.position.copy(hit.point);
-    this.ghostGroup.scale.setScalar(5.0);
+    this.ghostGroup.scale.setScalar(this.placementScaleFor(this.selectedAsset));
     this.ghostGroup.visible = true;
   };
+
+  private placementScaleFor(assetKey: string): number {
+    const def = getProp(assetKey);
+    return def?.placementScale ?? 5.0;
+  }
 
   private readonly onPointerDown = (ev: PointerEvent): void => {
     if (!this.active) return;
@@ -119,6 +137,7 @@ export class PropPlacer {
     this.raycaster.setFromCamera(this.ndc, this.camera);
     const hit = this.raycaster.intersectObject(this.terrainMesh, false)[0];
     if (!hit) return;
+    const baseScale = this.placementScaleFor(this.selectedAsset);
     const jitter = ev.shiftKey;
     const prop: PropState = {
       id: randomPropId(),
@@ -127,7 +146,7 @@ export class PropPlacer {
       y: hit.point.y,
       z: hit.point.z,
       rotY: jitter ? Math.random() * Math.PI * 2 : 0,
-      scale: jitter ? 4.0 + Math.random() * 3.0 : 5.0,
+      scale: jitter ? baseScale * (0.8 + Math.random() * 0.6) : baseScale,
     };
     this.propWorld.add(prop);
   }
@@ -135,9 +154,16 @@ export class PropPlacer {
   private deleteHit(ev: PointerEvent): void {
     this.setNdc(ev);
     this.raycaster.setFromCamera(this.ndc, this.camera);
-    const meshes = this.propRenderer.getAllMeshes();
-    const hits = this.raycaster.intersectObjects(meshes, false);
+    const instMeshes = this.propRenderer.getAllMeshes();
+    const torchMeshes = this.torchRenderer?.getRaycastMeshes() ?? [];
+    const allMeshes = torchMeshes.length > 0 ? [...instMeshes, ...torchMeshes] : instMeshes;
+    const hits = this.raycaster.intersectObjects(allMeshes, false);
     for (const h of hits) {
+      const torchId = this.torchRenderer?.propIdFromHit(h.object) ?? null;
+      if (torchId) {
+        this.propWorld.remove(torchId);
+        return;
+      }
       const id = this.propRenderer.propIdFromHit(h.object, h.instanceId);
       if (id) {
         this.propWorld.remove(id);

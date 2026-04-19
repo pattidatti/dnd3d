@@ -6,6 +6,7 @@ import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
+import type { Pass } from 'three/examples/jsm/postprocessing/Pass.js';
 import { profileFor, type GraphicsQuality } from './GraphicsQuality';
 
 // Vignette + color grade shader. Lift/gamma/gain er klassisk filmisk grading.
@@ -79,9 +80,9 @@ interface MoodLook {
 
 const MOODS: Record<Mood, MoodLook> = {
   day: {
-    bloomStrength: 0.28,
-    bloomThreshold: 0.88,
-    bloomRadius: 0.55,
+    bloomStrength: 0.08,
+    bloomThreshold: 0.96,
+    bloomRadius: 0.4,
     vignette: 0.35,
     lift: new THREE.Vector3(0.0, 0.0, 0.01),
     gamma: new THREE.Vector3(1.0, 1.0, 1.02),
@@ -89,9 +90,9 @@ const MOODS: Record<Mood, MoodLook> = {
     saturation: 1.05,
   },
   dawn: {
-    bloomStrength: 0.5,
-    bloomThreshold: 0.78,
-    bloomRadius: 0.7,
+    bloomStrength: 0.18,
+    bloomThreshold: 0.90,
+    bloomRadius: 0.6,
     vignette: 0.45,
     lift: new THREE.Vector3(0.02, 0.0, -0.02),
     gamma: new THREE.Vector3(0.98, 1.02, 1.06),
@@ -99,9 +100,9 @@ const MOODS: Record<Mood, MoodLook> = {
     saturation: 1.12,
   },
   dusk: {
-    bloomStrength: 0.6,
-    bloomThreshold: 0.72,
-    bloomRadius: 0.75,
+    bloomStrength: 0.22,
+    bloomThreshold: 0.88,
+    bloomRadius: 0.65,
     vignette: 0.55,
     lift: new THREE.Vector3(0.03, 0.005, -0.015),
     gamma: new THREE.Vector3(0.95, 1.0, 1.05),
@@ -109,8 +110,8 @@ const MOODS: Record<Mood, MoodLook> = {
     saturation: 1.18,
   },
   night: {
-    bloomStrength: 0.7,
-    bloomThreshold: 0.55,
+    bloomStrength: 0.35,
+    bloomThreshold: 0.75,
     bloomRadius: 0.85,
     vignette: 0.7,
     lift: new THREE.Vector3(-0.01, 0.0, 0.04),
@@ -122,6 +123,9 @@ const MOODS: Record<Mood, MoodLook> = {
 
 export class PostProcessing {
   readonly composer: EffectComposer;
+  /** Hovedtarget for composer — eier dybde-tekstur som DarknessPass leser fra. */
+  readonly mainRenderTarget: THREE.WebGLRenderTarget;
+  readonly depthTexture: THREE.DepthTexture;
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene: THREE.Scene;
   private readonly camera: THREE.PerspectiveCamera;
@@ -132,6 +136,7 @@ export class PostProcessing {
   private gradePass!: ShaderPass;
   private outputPass!: OutputPass;
   private smaaPass: SMAAPass | null = null;
+  private darknessPass: Pass | null = null;
 
   private quality: GraphicsQuality;
   private currentMood: Mood = 'day';
@@ -147,11 +152,36 @@ export class PostProcessing {
     this.camera = camera;
     this.quality = quality;
 
-    this.composer = new EffectComposer(renderer);
-    this.composer.setPixelRatio(renderer.getPixelRatio());
     const size = renderer.getSize(new THREE.Vector2());
+    const px = renderer.getPixelRatio();
+    const w = Math.max(1, Math.floor(size.x * px));
+    const h = Math.max(1, Math.floor(size.y * px));
+
+    // Bygg eget render-target med dybde-tekstur — DarknessPass må kunne
+    // sample scene-depth for å rekonstruere verdens-posisjon per piksel.
+    this.depthTexture = new THREE.DepthTexture(w, h);
+    this.depthTexture.format = THREE.DepthFormat;
+    this.depthTexture.type = THREE.UnsignedShortType;
+    this.mainRenderTarget = new THREE.WebGLRenderTarget(w, h, {
+      depthBuffer: true,
+      depthTexture: this.depthTexture,
+    });
+
+    this.composer = new EffectComposer(renderer, this.mainRenderTarget);
+    this.composer.setPixelRatio(px);
     this.composer.setSize(size.x, size.y);
 
+    this.buildPasses();
+    this.applyMood(this.currentMood);
+  }
+
+  /**
+   * Sett (eller fjern) en Darkness-pass som settes inn rett etter RenderPass.
+   * Må kalles før noe annet enn Render har kjørt for å få korrekt rekkefølge —
+   * praktisk ved boot.
+   */
+  setDarknessPass(pass: Pass | null): void {
+    this.darknessPass = pass;
     this.buildPasses();
     this.applyMood(this.currentMood);
   }
@@ -168,6 +198,13 @@ export class PostProcessing {
 
     this.renderPass = new RenderPass(this.scene, this.camera);
     this.composer.addPass(this.renderPass);
+
+    // Mørke kommer rett etter scene-rendering, før bloom/grade — slik at
+    // bloom kan plukke opp glow fra opplyste områder, og color-grade får
+    // riktig tone-base.
+    if (this.darknessPass) {
+      this.composer.addPass(this.darknessPass);
+    }
 
     if (profile.ssao) {
       const w = profile.ssaoHalfRes ? Math.floor(size.x / 2) : size.x;

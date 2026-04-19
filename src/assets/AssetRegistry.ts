@@ -3,13 +3,16 @@
  * dem direkte. Kategorier brukes av PropPlacer-toolbar.
  */
 
-export type AssetCategory = 'vegetation' | 'terrain' | 'structure' | 'castle' | 'town' | 'character';
+export type AssetCategory = 'vegetation' | 'terrain' | 'structure' | 'lighting' | 'castle' | 'town' | 'character';
 
 export interface AssetDef {
   key: string;        // unik nøkkel, brukt i PropState og InstancedPropRenderer
-  url: string;        // relativ URL (servert av Vite)
+  url: string;        // relativ URL (servert av Vite); ignorert hvis procedural
   category: AssetCategory;
   label?: string;     // norsk visnings-navn for toolbar; faller tilbake til key hvis utelatt
+  procedural?: boolean;     // true = ingen GLTF-load, en parallell renderer eier instansene
+  placementScale?: number;  // overstyrer PropPlacer default scale (5.0). Brukes for assets
+                             // som er modellert i ekte enheter (f.eks. torches i ~1m-skala).
 }
 
 const BASE = '/kenney';
@@ -222,7 +225,19 @@ const TOWN: AssetDef[] = [
   { key: 'town_rock_wide', url: `${TOWN_BASE}/rock-wide.glb`, category: 'town', label: 'Bred stein' },
 ];
 
-const ALL_PROPS: AssetDef[] = [...VEGETATION, ...TERRAIN, ...STRUCTURE, ...CASTLE, ...TOWN];
+// Procedurale lyskilder (ingen GLTF — TorchPropRenderer eier rendring).
+const LIGHTING: AssetDef[] = [
+  {
+    key: 'torch',
+    url: '',
+    category: 'lighting',
+    label: 'Fakkel',
+    procedural: true,
+    placementScale: 3.0,
+  },
+];
+
+const ALL_PROPS: AssetDef[] = [...VEGETATION, ...TERRAIN, ...STRUCTURE, ...LIGHTING, ...CASTLE, ...TOWN];
 const PROP_BY_KEY = new Map<string, AssetDef>();
 for (const a of ALL_PROPS) PROP_BY_KEY.set(a.key, a);
 

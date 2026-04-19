@@ -50,6 +50,9 @@ export class InstancedPropRenderer {
       console.warn(`InstancedPropRenderer: unknown asset "${assetKey}"`);
       return null;
     }
+    // Procedurale assets (f.eks. torches) eies av en parallell renderer; vi
+    // skal ikke laste GLTF eller bygge en bucket. Returner stille.
+    if (def.procedural) return null;
 
     const p = (async () => {
       try {

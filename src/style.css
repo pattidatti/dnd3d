@@ -18,3 +18,343 @@ html, body {
   width: 100vw;
   height: 100vh;
 }
+
+#ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+#ui > * {
+  pointer-events: auto;
+}
+
+.prop-toolbar {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  width: 280px;
+  max-height: 60vh;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+}
+
+.prop-toolbar__cats {
+  display: flex;
+  gap: 4px;
+}
+
+.prop-toolbar__cat {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #eee;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.prop-toolbar__cat.is-active {
+  background: #4a7bd6;
+  border-color: #4a7bd6;
+}
+
+.prop-toolbar__assets {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+  max-height: 45vh;
+}
+
+.prop-toolbar__asset {
+  padding: 6px 10px;
+  text-align: left;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #eee;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.prop-toolbar__asset:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.prop-toolbar__asset.is-selected {
+  background: #4a7bd6;
+  border-color: #6a9cf5;
+}
+
+.map-bar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.map-bar button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #eee;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.map-bar button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.class-picker {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.class-picker label {
+  color: #bbb;
+}
+
+.class-picker select {
+  background: rgba(255, 255, 255, 0.08);
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.camera-mode-indicator {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #bbb;
+}
+.camera-mode-indicator.active {
+  color: #6af0a0;
+  border-color: #3a7a52;
+}
+.camera-mode-indicator .hint {
+  margin-left: 8px;
+  color: #777;
+}
+
+.identity-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.identity-badge__name {
+  color: #eee;
+}
+
+.identity-badge__dm {
+  background: rgba(255, 255, 255, 0.08);
+  color: #bbb;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.identity-badge__dm.is-dm {
+  background: #c89124;
+  color: #fff;
+  border-color: #c89124;
+}
+
+.view-toggle {
+  position: absolute;
+  top: 12px;
+  right: 180px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #eee;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.view-toggle.player-mode {
+  color: #ffd27a;
+}
+
+.kb-chip {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  color: #bbb;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kb-key {
+  background: rgba(255, 255, 255, 0.12);
+  color: #eee;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.kb-join {
+  color: #777;
+  font-size: 11px;
+}
+
+.kb-keys {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  min-width: 140px;
+}
+
+.kb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.kb-overlay.active {
+  display: flex;
+}
+
+.kb-panel {
+  background: #1e2128;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  width: min(800px, 90vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  color: #eee;
+}
+
+.kb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.kb-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.kb-close {
+  background: transparent;
+  border: none;
+  color: #bbb;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.kb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 18px;
+}
+
+.kb-section h3 {
+  font-size: 13px;
+  color: #89c0ff;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kb-section ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kb-section li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.kb-label {
+  color: #ccc;
+}
+
+.kb-footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 11px;
+  color: #777;
+}
+
+.app-toast {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(18, 20, 26, 0.92);
+  color: #eee;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  font-size: 13px;
+}
+
+.app-toast.show {
+  opacity: 1;
+}

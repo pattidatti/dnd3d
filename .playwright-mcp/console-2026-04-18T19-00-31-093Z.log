@@ -1,0 +1,168 @@
+[    3387ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[   18305ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[   22941ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  147628ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  147671ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  311873ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  311917ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  329507ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  329549ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  349832ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  349880ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  681903ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  681956ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  683520ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  683571ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  686020ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  686066ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  688324ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  688377ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  800779ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  800829ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  816797ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  816852ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[  912084ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[  912130ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1031258ms] The requested module '/node_modules/.vite/deps/three_examples_jsm_utils_SkeletonUtils__js.js?v=55dd55af' does not provide an export named 'SkeletonUtils'
+[ 1038504ms] The requested module '/node_modules/.vite/deps/three_examples_jsm_utils_SkeletonUtils__js.js?v=55dd55af' does not provide an export named 'SkeletonUtils'
+[ 1041276ms] The requested module '/node_modules/.vite/deps/three_examples_jsm_utils_SkeletonUtils__js.js?v=55dd55af' does not provide an export named 'SkeletonUtils'
+[ 1042995ms] The requested module '/node_modules/.vite/deps/three_examples_jsm_utils_SkeletonUtils__js.js?v=55dd55af' does not provide an export named 'SkeletonUtils'
+[ 1060064ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1060121ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1062221ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1062279ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1408539ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1408612ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1408624ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1421594ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1421647ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1421651ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1423043ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1423101ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1423104ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1427068ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1427127ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1427133ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1428615ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1428669ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1428673ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1433105ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1433164ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1433168ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1599186ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1599247ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1599253ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1698964ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1699021ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1699026ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1708361ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1708419ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1708423ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1713020ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1713074ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1713078ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1714896ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1714958ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1714962ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1797627ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1797686ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1797690ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1802276ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1802338ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1802342ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1803240ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1803291ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1803294ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1971313ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1971369ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1971373ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1976474ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1976538ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1976542ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 1981747ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1981808ms] TypeError: this.applyDmRole is not a function
+    at new App (http://localhost:5173/src2/App.ts?t=1776540812605:155:8)
+    at http://localhost:5173/src2/main.ts?t=1776540812605:4:13
+[ 1982407ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1982466ms] TypeError: this.applyDmRole is not a function
+    at new App (http://localhost:5173/src2/App.ts?t=1776540813253:155:8)
+    at http://localhost:5173/src2/main.ts?t=1776540813253:4:13
+[ 1988493ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1988560ms] TypeError: this.applyDmRole is not a function
+    at new App (http://localhost:5173/src2/App.ts?t=1776540819516:155:8)
+    at http://localhost:5173/src2/main.ts?t=1776540819516:4:13
+[ 1990664ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 1990724ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 1990730ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 2217467ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 2217531ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 2217536ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 2292765ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/src2/style.css?t=1776541123654:0
+[ 2292839ms] [ERROR] [vite] Failed to reload /src2/style.css. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:509
+[ 2292929ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/src2/main.ts?t=1776541123653:0
+[ 2300813ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 2300871ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 2300875ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 2302255ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 2302325ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 2302330ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 2845748ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 2845801ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 2845805ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 2891910ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 2891965ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 2891969ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 2896045ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 2896107ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 2896110ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 3832400ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:5173/@vite/client:509
+[ 3832464ms] [WARNING] using deprecated parameters for the initialization function; pass a single object instead @ http://localhost:5173/@vite/client:509
+[ 3832468ms] [WARNING] THREE.WebGLShadowMap: PCFSoftShadowMap has been deprecated. Using PCFShadowMap instead. @ http://localhost:5173/@vite/client:509
+[ 3834048ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834205ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834206ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834207ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834207ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834208ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834209ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834210ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834210ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834211ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834211ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834212ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834212ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834213ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834213ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834213ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834214ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834214ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834214ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834215ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834215ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834216ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834216ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834216ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834217ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834217ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834218ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834218ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834218ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834219ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834219ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834220ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834221ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834222ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834222ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834223ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834226ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834226ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834226ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834227ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834227ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834227ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834228ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834228ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834228ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834229ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834229ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509
+[ 3834230ms] [ERROR] THREE.GLTFLoader: Couldn't load texture Textures/colormap.png @ http://localhost:5173/@vite/client:509

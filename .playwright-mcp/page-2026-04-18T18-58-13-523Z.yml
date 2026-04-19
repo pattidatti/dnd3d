@@ -1,0 +1,78 @@
+- generic [ref=e1]:
+  - generic:
+    - generic [ref=e3]:
+      - button "🧱" [ref=e4] [cursor=pointer]
+      - button "⛋" [ref=e5] [cursor=pointer]
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]: Natur
+        - button "1 Jord" [ref=e9] [cursor=pointer]:
+          - generic [ref=e10]: "1"
+          - generic [ref=e12]: Jord
+        - button "2 Gress" [ref=e13] [cursor=pointer]:
+          - generic [ref=e14]: "2"
+          - generic [ref=e16]: Gress
+        - button "3 Løv" [ref=e17] [cursor=pointer]:
+          - generic [ref=e18]: "3"
+          - generic [ref=e20]: Løv
+        - button "4 Stamme" [ref=e21] [cursor=pointer]:
+          - generic [ref=e22]: "4"
+          - generic [ref=e24]: Stamme
+        - button "5 Sand" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]: "5"
+          - generic [ref=e28]: Sand
+        - button "6 Vann" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: "6"
+          - generic [ref=e32]: Vann
+      - generic [ref=e33]:
+        - generic [ref=e34]: Arkitektur
+        - button "7 Stein" [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]: "7"
+          - generic [ref=e38]: Stein
+        - button "8 Puss" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: "8"
+          - generic [ref=e42]: Puss
+        - button "9 Tegl" [ref=e43] [cursor=pointer]:
+          - generic [ref=e44]: "9"
+          - generic [ref=e46]: Tegl
+        - button "Q Takstein" [ref=e47] [cursor=pointer]:
+          - generic [ref=e48]: Q
+          - generic [ref=e50]: Takstein
+        - button "W Tre" [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: W
+          - generic [ref=e54]: Tre
+        - button "E Skifer" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: E
+          - generic [ref=e58]: Skifer
+    - generic [ref=e59] [cursor=pointer]:
+      - generic [ref=e60]: H
+      - generic [ref=e61]: Hurtigtaster
+    - generic [ref=e63]:
+      - strong [ref=e64]: Orbit
+      - generic [ref=e65]: Tab
+  - generic [ref=e67]:
+    - heading "Hvem er du?" [level=2] [ref=e68]
+    - paragraph [ref=e69]: Velg navn, farge og initial. Lagres lokalt i nettleseren.
+    - generic [ref=e70]:
+      - text: Navn
+      - textbox "Navn" [active] [ref=e71]:
+        - /placeholder: F.eks. Aragorn
+    - generic [ref=e72]:
+      - text: Initial (1–2 bokstaver)
+      - textbox "Initial (1–2 bokstaver)" [ref=e73]:
+        - /placeholder: A
+    - generic [ref=e74]:
+      - generic [ref=e75]: Farge
+      - generic [ref=e76]:
+        - button [ref=e77] [cursor=pointer]
+        - button [ref=e78] [cursor=pointer]
+        - button [ref=e79] [cursor=pointer]
+        - button [ref=e80] [cursor=pointer]
+        - button [ref=e81] [cursor=pointer]
+        - button [ref=e82] [cursor=pointer]
+        - button [ref=e83] [cursor=pointer]
+        - button [ref=e84] [cursor=pointer]
+    - generic [ref=e85]:
+      - checkbox "Jeg er DM (kan flytte alle tokens)" [ref=e86]
+      - generic [ref=e87]: Jeg er DM (kan flytte alle tokens)
+    - button "Fortsett" [ref=e90] [cursor=pointer]

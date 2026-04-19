@@ -1,50 +1,78 @@
-import type { BlockType } from '../world/BlockPalette';
-import { VoxelWorld } from '../world/VoxelWorld';
-import { FogOfWar } from '../fog/FogOfWar';
-import { MapStore, type MapSnapshot } from './MapStore';
+import type { Terrain } from '../world/Terrain';
+import type { PropWorld } from '../world/PropWorld';
+import {
+  decodeFloat32,
+  decodeUint8,
+  encodeFloat32,
+  encodeUint8,
+  MapStore,
+  type MapSnapshotV2,
+} from './MapStore';
 
+/**
+ * Broker mellom verden-objekter og MapStore. Serialiserer terreng-heights +
+ * biome + props, og laster dem tilbake.
+ */
 export class MapManager {
   constructor(
-    private readonly world: VoxelWorld,
-    private readonly fog: FogOfWar,
+    private readonly terrain: Terrain,
+    private readonly propWorld: PropWorld,
     private readonly store: MapStore,
   ) {}
 
-  saveMap(name: string, id?: string): MapSnapshot {
-    const blocks: [number, number, number, number][] = [];
-    this.world.forEach((x, y, z, type) => blocks.push([x, y, z, type as number]));
+  snapshot(id: string, name: string): MapSnapshotV2 {
     const now = Date.now();
-    const existing = id ? this.store.get(id) : undefined;
-    const snapshot: MapSnapshot = {
-      id: id ?? this.store.makeId(),
+    const existing = this.store.get(id);
+    return {
+      id,
       name,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
-      blocks,
+      terrain: {
+        widthCells: this.terrain.widthCells,
+        depthCells: this.terrain.depthCells,
+        heights: encodeFloat32(this.terrain.heights),
+        biome: encodeUint8(this.terrain.biome),
+      },
+      props: this.propWorld.all(),
     };
-    this.store.save(snapshot);
-    return snapshot;
   }
 
-  loadMap(id: string): void {
-    const snapshot = this.store.get(id);
-    if (!snapshot) return;
-    this.world.clear();
-    this.fog.clearAll();
-    for (const [x, y, z, type] of snapshot.blocks) {
-      this.world.setBlock(x, y, z, type as BlockType);
+  saveAs(name: string): MapSnapshotV2 {
+    const snap = this.snapshot(this.store.makeId(), name);
+    this.store.save(snap);
+    return snap;
+  }
+
+  overwrite(id: string, name?: string): MapSnapshotV2 | null {
+    const existing = this.store.get(id);
+    if (!existing) return null;
+    const snap = this.snapshot(id, name ?? existing.name);
+    this.store.save(snap);
+    return snap;
+  }
+
+  load(id: string): boolean {
+    const snap = this.store.get(id);
+    if (!snap) return false;
+    this.applySnapshot(snap);
+    return true;
+  }
+
+  applySnapshot(snap: MapSnapshotV2): void {
+    const { widthCells, depthCells, heights, biome } = snap.terrain;
+    if (widthCells !== this.terrain.widthCells || depthCells !== this.terrain.depthCells) {
+      // For nå krever vi samme størrelse. Senere kan vi støtte resizing.
+      console.warn('MapManager: terrain-størrelse mismatch, hopper over load');
+      return;
     }
-  }
+    const decodedH = decodeFloat32(heights);
+    const decodedB = decodeUint8(biome);
+    this.terrain.heights.set(decodedH);
+    this.terrain.biome.set(decodedB);
 
-  deleteMap(id: string): void {
-    this.store.delete(id);
-  }
-
-  renameMap(id: string, name: string): void {
-    this.store.rename(id, name);
-  }
-
-  listMaps(): MapSnapshot[] {
-    return this.store.list();
+    // Fjern alle eksisterende props og legg inn de lagrede.
+    this.propWorld.clear();
+    for (const p of snap.props) this.propWorld.add(p);
   }
 }

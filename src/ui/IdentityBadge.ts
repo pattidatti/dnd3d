@@ -1,44 +1,49 @@
 import type { LocalIdentity } from '../character/LocalIdentity';
 
+type DmToggle = (isDm: boolean) => void;
+
+/**
+ * Identity-chip nede høyre. Viser navn + klasse, og lar bruker toggle DM-rolle.
+ */
 export class IdentityBadge {
-  private readonly root: HTMLDivElement;
-  private readonly dot: HTMLSpanElement;
-  private readonly nameEl: HTMLSpanElement;
-  private readonly dmTag: HTMLSpanElement;
+  readonly root: HTMLDivElement;
+  private dmBtn: HTMLButtonElement;
 
   constructor(
     mount: HTMLElement,
-    identity: LocalIdentity,
-    private readonly onEdit: () => void,
+    private identity: LocalIdentity,
+    private readonly onDmToggle: DmToggle,
   ) {
     this.root = document.createElement('div');
     this.root.className = 'identity-badge';
 
-    this.dot = document.createElement('span');
-    this.dot.className = 'dot';
-    this.root.appendChild(this.dot);
+    const name = document.createElement('span');
+    name.className = 'identity-badge__name';
+    name.textContent = `${identity.name} · ${identity.classKey}`;
+    this.root.appendChild(name);
 
-    this.nameEl = document.createElement('span');
-    this.root.appendChild(this.nameEl);
-
-    this.dmTag = document.createElement('span');
-    this.dmTag.className = 'dm-tag';
-    this.dmTag.textContent = 'DM';
-    this.root.appendChild(this.dmTag);
-
-    const editBtn = document.createElement('button');
-    editBtn.type = 'button';
-    editBtn.textContent = 'Endre';
-    editBtn.addEventListener('click', () => this.onEdit());
-    this.root.appendChild(editBtn);
+    this.dmBtn = document.createElement('button');
+    this.dmBtn.type = 'button';
+    this.dmBtn.className = 'identity-badge__dm';
+    this.dmBtn.textContent = identity.isDM ? 'DM' : 'Spiller';
+    this.dmBtn.classList.toggle('is-dm', identity.isDM);
+    this.dmBtn.addEventListener('click', () => {
+      const newDm = !this.identity.isDM;
+      this.identity = { ...this.identity, isDM: newDm };
+      this.dmBtn.textContent = newDm ? 'DM' : 'Spiller';
+      this.dmBtn.classList.toggle('is-dm', newDm);
+      this.onDmToggle(newDm);
+    });
+    this.root.appendChild(this.dmBtn);
 
     mount.appendChild(this.root);
-    this.update(identity);
   }
 
   update(identity: LocalIdentity): void {
-    this.dot.style.background = identity.color;
-    this.nameEl.textContent = `${identity.name} (${identity.initial.toUpperCase()})`;
-    this.dmTag.style.display = identity.isDM ? 'inline-block' : 'none';
+    this.identity = identity;
+    this.root.querySelector('.identity-badge__name')!.textContent =
+      `${identity.name} · ${identity.classKey}`;
+    this.dmBtn.textContent = identity.isDM ? 'DM' : 'Spiller';
+    this.dmBtn.classList.toggle('is-dm', identity.isDM);
   }
 }

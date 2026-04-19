@@ -24,6 +24,7 @@ interface MoodSpec {
   fogNear: number;
   fogFar: number;
   envIntensity: number;
+  toneMappingExposure: number;
 }
 
 const MOOD_PRESETS: Record<Mood, MoodSpec> = {
@@ -43,6 +44,7 @@ const MOOD_PRESETS: Record<Mood, MoodSpec> = {
     fogNear: 140,
     fogFar: 500,
     envIntensity: 0.5,
+    toneMappingExposure: 0.60,
   },
   dawn: {
     elevation: 8,
@@ -60,6 +62,7 @@ const MOOD_PRESETS: Record<Mood, MoodSpec> = {
     fogNear: 120,
     fogFar: 460,
     envIntensity: 0.45,
+    toneMappingExposure: 0.50,
   },
   dusk: {
     elevation: 6,
@@ -77,6 +80,7 @@ const MOOD_PRESETS: Record<Mood, MoodSpec> = {
     fogNear: 110,
     fogFar: 440,
     envIntensity: 0.4,
+    toneMappingExposure: 0.45,
   },
   night: {
     elevation: 35,
@@ -94,6 +98,7 @@ const MOOD_PRESETS: Record<Mood, MoodSpec> = {
     fogNear: 70,
     fogFar: 340,
     envIntensity: 0.12,
+    toneMappingExposure: 0.28,
   },
 };
 
@@ -114,6 +119,7 @@ interface AnimState {
   mieDirectionalG: number;
   elevation: number;
   azimuth: number;
+  toneMappingExposure: number;
 }
 
 function specToState(s: MoodSpec): AnimState {
@@ -133,6 +139,7 @@ function specToState(s: MoodSpec): AnimState {
     mieDirectionalG: s.mieDirectionalG,
     elevation: s.elevation,
     azimuth: s.azimuth,
+    toneMappingExposure: s.toneMappingExposure,
   };
 }
 
@@ -159,11 +166,13 @@ export class SkyEnvironment {
   private currentEnvTarget: THREE.WebGLRenderTarget | null = null;
   private envDirty = false;
   private envRefreshScheduled = false;
+  private readonly renderer: THREE.WebGLRenderer;
 
   private readonly listeners = new Set<(mood: Mood) => void>();
 
   constructor(scene: THREE.Scene, renderer: THREE.WebGLRenderer) {
     this.scene = scene;
+    this.renderer = renderer;
 
     this.sky = new Sky();
     this.sky.scale.setScalar(4500);
@@ -321,6 +330,7 @@ export class SkyEnvironment {
       this.scene.background = s.fogColor.clone();
     }
     this.scene.environmentIntensity = s.envIntensity;
+    this.renderer.toneMappingExposure = s.toneMappingExposure;
   }
 
   private refreshEnvironment(): void {
@@ -362,4 +372,5 @@ function lerpState(a: AnimState, b: AnimState, t: number, out: AnimState): void 
   out.mieDirectionalG = THREE.MathUtils.lerp(a.mieDirectionalG, b.mieDirectionalG, t);
   out.elevation = THREE.MathUtils.lerp(a.elevation, b.elevation, t);
   out.azimuth = THREE.MathUtils.lerp(a.azimuth, b.azimuth, t);
+  out.toneMappingExposure = THREE.MathUtils.lerp(a.toneMappingExposure, b.toneMappingExposure, t);
 }

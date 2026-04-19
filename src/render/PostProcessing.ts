@@ -192,18 +192,18 @@ export class PostProcessing {
       this.composer.addPass(this.bloomPass);
     }
 
-    this.gradePass = new ShaderPass(GradeShader);
-    this.composer.addPass(this.gradePass);
-
-    this.outputPass = new OutputPass();
-    this.composer.addPass(this.outputPass);
-
     if (profile.smaa) {
       this.smaaPass = new SMAAPass();
       this.composer.addPass(this.smaaPass);
     } else {
       this.smaaPass = null;
     }
+
+    this.gradePass = new ShaderPass(GradeShader);
+    this.composer.addPass(this.gradePass);
+
+    this.outputPass = new OutputPass();
+    this.composer.addPass(this.outputPass);
   }
 
   setSize(width: number, height: number): void {

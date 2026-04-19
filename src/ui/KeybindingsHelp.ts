@@ -1,10 +1,7 @@
-import './styles.css';
-
 interface Binding {
   keys: string[];
   label: string;
 }
-
 interface Section {
   title: string;
   bindings: Binding[];
@@ -16,46 +13,39 @@ const SECTIONS: Section[] = [
     bindings: [
       { keys: ['Tab'], label: 'Bytt orbit ↔ tredjeperson' },
       { keys: ['T'], label: 'Topdown-visning' },
-      { keys: ['F'], label: 'Fokuser p\u00e5 valgt/egen avatar' },
-      { keys: ['G'], label: 'Vis/skjul rutenett' },
-    ],
-  },
-  {
-    title: 'Bygging (orbit)',
-    bindings: [
-      { keys: ['B'], label: 'Bygg-modus' },
-      { keys: ['N'], label: 'Avatar-modus' },
-      { keys: ['R'], label: 'Fog reveal (DM)' },
-      { keys: ['1', '–', '6'], label: 'Natur-blokker' },
-      { keys: ['7', '–', '9', 'Q', 'W', 'E'], label: 'Arkitektur-blokker' },
-      { keys: ['Venstreklikk'], label: 'Plasser blokk / flytt avatar' },
-      { keys: ['H\u00f8yreklikk'], label: 'Fjern blokk / slett avatar' },
+      { keys: ['Esc'], label: 'Slipp musel\u00e5s' },
     ],
   },
   {
     title: 'Tredjeperson',
     bindings: [
-      { keys: ['Klikk'], label: 'L\u00e5s mus (pointer-lock)' },
+      { keys: ['Klikk'], label: 'L\u00e5s mus' },
       { keys: ['W', 'A', 'S', 'D'], label: 'G\u00e5' },
       { keys: ['Mellomrom'], label: 'Hopp' },
       { keys: ['Shift'], label: 'L\u00f8p' },
       { keys: ['Mus'], label: 'Rot\u00e9r kamera' },
       { keys: ['Scroll'], label: 'Zoom avstand' },
-      { keys: ['Esc'], label: 'Slipp musel\u00e5s' },
+    ],
+  },
+  {
+    title: 'Props (orbit)',
+    bindings: [
+      { keys: ['Venstreklikk'], label: 'Plasser valgt prop' },
+      { keys: ['H\u00f8yreklikk'], label: 'Slett prop' },
+      { keys: ['Shift', '+', 'klikk'], label: 'Plasser med jitter' },
     ],
   },
   {
     title: 'DM',
     bindings: [
-      { keys: ['V'], label: 'DM-visning ↔ spiller-visning' },
-      { keys: ['M'], label: 'Kartstyring' },
-      { keys: ['Shift', '+', 'klikk'], label: 'Fog: avsl\u00f8r 3×3 (DM)' },
+      { keys: ['R'], label: 'Fog reveal-modus' },
+      { keys: ['V'], label: 'DM ↔ spiller-visning' },
+      { keys: ['Shift', '+', 'klikk'], label: 'Fog: avsl\u00f8r 3×3' },
     ],
   },
   {
     title: 'Annet',
     bindings: [
-      { keys: ['Esc'], label: 'Opphev valg / lukk modus' },
       { keys: ['H'], label: 'Vis/skjul denne hjelpen' },
     ],
   },
@@ -86,8 +76,7 @@ export class KeybindingsHelp {
   }
 
   toggle(): void {
-    if (this.open) this.close();
-    else this.show();
+    this.open ? this.close() : this.show();
   }
 
   show(): void {
@@ -159,7 +148,6 @@ export class KeybindingsHelp {
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-    // Ikke trigger H når musen er låst (tredjeperson gameplay).
     if (document.pointerLockElement) return;
     const key = e.key.toLowerCase();
     if (key === 'h') {

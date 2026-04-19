@@ -3,23 +3,24 @@ import { cellIndex } from '../world/Grid';
 import { FogOfWar } from './FogOfWar';
 
 const DRAG_THRESHOLD_PX = 4;
-const WORLD_HALF_CELLS = 50; // må matche FogRenderer
+const WORLD_HALF_CELLS = 50;
 
+/**
+ * Fog-placer som raycaster mot terreng-mesh istedenfor en flat y=0-plane,
+ * slik at avsløring treffer rett celle også på skråninger/høyder.
+ */
 export class FogPlacer {
-  /** Satt av App. Når false ignoreres klikk. */
   active = false;
   private readonly raycaster = new THREE.Raycaster();
   private readonly ndc = new THREE.Vector2();
-  private readonly groundPlane: THREE.Plane;
-  private readonly tmpPoint = new THREE.Vector3();
   private dragStart: { x: number; y: number; button: number; shift: boolean } | null = null;
 
   constructor(
     private readonly camera: THREE.PerspectiveCamera,
     private readonly dom: HTMLCanvasElement,
     private readonly fog: FogOfWar,
+    private readonly terrainMesh: THREE.Mesh,
   ) {
-    this.groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     dom.addEventListener('pointerdown', this.onPointerDown);
     dom.addEventListener('pointerup', this.onPointerUp);
     dom.addEventListener('contextmenu', this.onContextMenu);
@@ -54,11 +55,11 @@ export class FogPlacer {
 
     this.updateNDC(e);
     this.raycaster.setFromCamera(this.ndc, this.camera);
-    const ground = this.raycaster.ray.intersectPlane(this.groundPlane, this.tmpPoint);
-    if (!ground) return;
+    const hit = this.raycaster.intersectObject(this.terrainMesh, false)[0];
+    if (!hit) return;
 
-    const cellX = cellIndex(ground.x);
-    const cellZ = cellIndex(ground.z);
+    const cellX = cellIndex(hit.point.x);
+    const cellZ = cellIndex(hit.point.z);
     if (!this.inBounds(cellX, cellZ)) return;
 
     if (e.button === 0) {

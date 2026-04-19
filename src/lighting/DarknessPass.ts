@@ -19,6 +19,7 @@ export const MAX_LIGHTS = 32;
 export interface DarknessPassOptions {
   minDarkness?: number;     // 0..1; floor på mørke selv i fullt sollys
   globalOpacity?: number;   // 0..1; multiplier på mørket (1 = full, brukes til DM-overlay)
+  skyDarkness?: number;     // 0..1; hvor mye himmel/horisont-piksler skal mørklegges (mood-styrt)
 }
 
 const VERT = /* glsl */ `
@@ -47,6 +48,7 @@ const FRAG = /* glsl */ `
 
   uniform float uMinDarkness;
   uniform float uGlobalOpacity;
+  uniform float uSkyDarkness;
 
   varying vec2 vUv;
 
@@ -64,10 +66,12 @@ const FRAG = /* glsl */ `
     vec4 src = texture2D(tDiffuse, vUv);
     float rawDepth = texture2D(tDepth, vUv).x;
 
-    // Sky / fjernt gir depth ~ 1.0 — la den være urørt så vi ikke maler mørke
-    // over himmelen. Mørket gjelder kun verdens-flater.
+    // Himmel/horisont (depth ~1.0): mørklegg etter mood. uSkyDarkness=0 lar
+    // dag-himmelen være helt urørt; uSkyDarkness~0.95 + mood-tunet sun-elev
+    // gjør natt-himmelen tilnærmet kullsvart.
     if (rawDepth >= 0.9999) {
-      gl_FragColor = src;
+      vec3 darkSky = src.rgb * 0.08;
+      gl_FragColor = vec4(mix(src.rgb, darkSky, uSkyDarkness * uGlobalOpacity), src.a);
       return;
     }
 
@@ -95,16 +99,19 @@ const FRAG = /* glsl */ `
     }
     reveal = clamp(reveal, 0.0, 1.0);
 
-    // Mørke-mengde i [0..1].
+    // Mørke-mengde i [0..1]. Cappen er nesten 1.0 slik at natt kan drepe sikten
+    // helt utenfor lyskilder.
     float darkness = uMinDarkness * (1.0 - reveal);
-    darkness = clamp(darkness * uGlobalOpacity, 0.0, 0.985);
+    darkness = clamp(darkness * uGlobalOpacity, 0.0, 0.998);
 
-    // Mørke maler ned originalfargen med en svak kjølig tone for atmosfære.
-    vec3 darkColor = src.rgb * vec3(0.45, 0.55, 0.85);
+    // Absolutt nær-svart (ikke src-relativt) så natt utenfor lys mister all
+    // gjenkjennbar farge. Kullblå-tone for stemning, ikke pen sort.
+    vec3 darkColor = vec3(0.003, 0.005, 0.012);
 
-    // Varm tint nær lys (additivt, dempet av (1 - darkness)).
+    // Varm tint nær lys. Ingen multiplikativ lift på src — vi vil at "opplyst"
+    // skal komme fra at darkness=0, ikke fra ekstra brightness.
     vec3 warm = warmWeight > 0.0001 ? warmTint / warmWeight : vec3(0.0);
-    vec3 lit = src.rgb + warm * 0.10 * reveal;
+    vec3 lit = src.rgb + warm * 0.45 * reveal;
 
     vec3 outCol = mix(lit, darkColor, darkness);
     gl_FragColor = vec4(outCol, src.a);
@@ -120,7 +127,6 @@ export class DarknessPass extends Pass {
   constructor(
     camera: THREE.PerspectiveCamera,
     lights: LightRegistry,
-    depthTexture: THREE.DepthTexture,
     options: DarknessPassOptions = {},
   ) {
     super();
@@ -141,7 +147,7 @@ export class DarknessPass extends Pass {
       fragmentShader: FRAG,
       uniforms: {
         tDiffuse: { value: null },
-        tDepth: { value: depthTexture },
+        tDepth: { value: null },
         cameraNear: { value: camera.near },
         cameraFar: { value: camera.far },
         projectionMatrixInverse: { value: new THREE.Matrix4() },
@@ -153,6 +159,7 @@ export class DarknessPass extends Pass {
         uLightIntensity: { value: new Float32Array(MAX_LIGHTS) },
         uMinDarkness: { value: options.minDarkness ?? 0.85 },
         uGlobalOpacity: { value: options.globalOpacity ?? 1.0 },
+        uSkyDarkness: { value: options.skyDarkness ?? 0.0 },
       },
       depthWrite: false,
       depthTest: false,
@@ -169,8 +176,8 @@ export class DarknessPass extends Pass {
     this.material.uniforms.uGlobalOpacity.value = THREE.MathUtils.clamp(v, 0, 1);
   }
 
-  setDepthTexture(tex: THREE.DepthTexture): void {
-    this.material.uniforms.tDepth.value = tex;
+  setSkyDarkness(v: number): void {
+    this.material.uniforms.uSkyDarkness.value = THREE.MathUtils.clamp(v, 0, 1);
   }
 
   /** Refresher kamera- og lys-uniforms. Kalles fra App.tick FØR composer.render. */
@@ -210,7 +217,11 @@ export class DarknessPass extends Pass {
     writeBuffer: THREE.WebGLRenderTarget | null,
     readBuffer: THREE.WebGLRenderTarget,
   ): void {
+    // readBuffer ble akkurat skrevet til av RenderPass, og dens depthTexture
+    // har fersk scene-dybde. EffectComposer alternerer rt1/rt2 pr. frame —
+    // derfor må vi slå opp tDepth dynamisk (ikke holde en fast referanse).
     this.material.uniforms.tDiffuse.value = readBuffer.texture;
+    this.material.uniforms.tDepth.value = readBuffer.depthTexture;
     if (this.renderToScreen) {
       renderer.setRenderTarget(null);
     } else {

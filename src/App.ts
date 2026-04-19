@@ -32,6 +32,7 @@ import { TorchPropRenderer } from './lighting/TorchPropRenderer';
 import { DarknessPass } from './lighting/DarknessPass';
 import { DarknessViewToggle } from './ui/DarknessViewToggle';
 import { LightRadiusPanel } from './ui/LightRadiusPanel';
+import { MoodPanel } from './ui/MoodPanel';
 import { IdentityBadge } from './ui/IdentityBadge';
 import { KeybindingsHelp } from './ui/KeybindingsHelp';
 
@@ -84,6 +85,7 @@ export class App {
   readonly darknessPass: DarknessPass;
   readonly darknessViewToggle: DarknessViewToggle;
   readonly lightRadiusPanel: LightRadiusPanel;
+  readonly moodPanel: MoodPanel;
   readonly identityBadge: IdentityBadge;
   readonly keybindingsHelp: KeybindingsHelp;
 
@@ -234,18 +236,34 @@ export class App {
       void this.respawnOwnAvatar();
     });
 
-    // Mørke-pass — settes inn rett etter RenderPass i composeren. Bruker
-    // depth-texturen som PostProcessing eier.
+    // Mørke-pass — settes inn rett etter RenderPass i composeren. Leser
+    // dybde fra composer-readBuffer pr. frame (rt1/rt2 alternerer).
     this.darknessPass = new DarknessPass(
       this.camera,
       this.lights,
-      this.post.depthTexture,
-      { minDarkness: 0.88, globalOpacity: 1.0 },
+      { minDarkness: 0.82, globalOpacity: 1.0 },
     );
     this.post.setDarknessPass(this.darknessPass);
 
+    // Mørke-styrke avhenger av tid på døgnet. Natt = nesten totalt mørke
+    // utenfor lyskilder + nær-svart himmel; dag = synlig verden + lys himmel.
+    const MOOD_DARKNESS: Record<Mood, { floor: number; sky: number }> = {
+      day:   { floor: 0.78,  sky: 0.0 },
+      dawn:  { floor: 0.88,  sky: 0.25 },
+      dusk:  { floor: 0.93,  sky: 0.55 },
+      night: { floor: 0.997, sky: 0.95 },
+    };
+    const applyMoodDarkness = (mood: Mood): void => {
+      const m = MOOD_DARKNESS[mood];
+      this.darknessPass.setMinDarkness(m.floor);
+      this.darknessPass.setSkyDarkness(m.sky);
+    };
+    this.sky.onMoodChange(applyMoodDarkness);
+    applyMoodDarkness(this.sky.getMood());
+
     this.darknessViewToggle = new DarknessViewToggle(uiMount, this.darknessPass);
     this.lightRadiusPanel = new LightRadiusPanel(uiMount, this.lights);
+    this.moodPanel = new MoodPanel(uiMount, this.sky);
 
     this.identityBadge = new IdentityBadge(uiMount, this.identity, (isDm) => {
       this.identity = { ...this.identity, isDM: isDm };
@@ -350,6 +368,7 @@ export class App {
         this.thirdPerson.update({ x: avatar.root.position.x, y: avatar.root.position.y, z: avatar.root.position.z }, dt);
       }
     } else {
+      this.cameraController.tick(dt);
       this.cameraController.update();
     }
 

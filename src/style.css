@@ -465,3 +465,54 @@ html, body {
   font-style: italic;
   font-size: 11px;
 }
+
+.mood-panel {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(18, 20, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+}
+
+.mood-panel__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 9px;
+  min-width: 54px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.04);
+  color: #bbb;
+  cursor: pointer;
+  font-size: 10px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.mood-panel__btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #eee;
+}
+
+.mood-panel__btn.is-active {
+  background: rgba(255, 210, 122, 0.18);
+  color: #ffd27a;
+  border-color: rgba(255, 210, 122, 0.5);
+}
+
+.mood-panel__icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.mood-panel__label {
+  font-size: 10px;
+  letter-spacing: 0.3px;
+}
